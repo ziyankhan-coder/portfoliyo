@@ -4,7 +4,7 @@ Welcome to the repository of my personal portfolio website!
 This is a modern, premium, and fully responsive single-page portfolio designed to showcase my skills, internships, certifications, and projects as an AI & ML Engineering student.
 
 ## 🌟 Live Demo
-*(You can add your Vercel or Netlify live link here once hosted!)*
+**[Click here to view my live portfolio!](https://portfoliyo-olive.vercel.app/)**
 
 ## 🎨 Features
 - **Sleek Dark Theme:** A visually stunning deep blue mesh gradient background with glassmorphism UI.
