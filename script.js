@@ -1,721 +1,602 @@
 /**
  * ====================================================================
- * ZIYAN KHAN PORTFOLIO — INTERACTIVE & DYNAMIC ENGINE
- * High Performance • Vanilla JS • 0 External Heavy Dependencies
+ * ZIYAN KHAN PORTFOLIO — RENDERING + INTERACTIONS
+ * Vanilla JS, no dependencies. All content comes from content.js.
  * ====================================================================
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
+  'use strict';
+
   const data = window.PORTFOLIO_DATA;
   if (!data) {
     console.error('Portfolio data not loaded. Check content.js');
     return;
   }
 
-  // 1. Initialize UI Renderers from content.js
-  renderHero(data.hero);
-  renderMarquee(data.marquee);
-  renderAbout(data.about);
-  renderSkills(data.skills);
-  renderExperience(data.experience);
-  renderProjects(data.projects);
-  renderServices(data.services);
-  renderAchievements(data.achievements);
-  renderCertifications(data.certifications);
-  renderContact(data.contact);
-  renderFooter(data.footer);
+  const root = document.documentElement;
+  const $ = (sel, ctx) => (ctx || document).querySelector(sel);
+  const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
 
-  // 2. Initialize Micro-interactions
-  initScrollProgressBar();
-  initTypingEffect(data.hero.typingRoles);
-  initHeroParallaxAndTilt();
-  initNavbar();
-  initScrollReveal();
-  init3DTilt();
-  initLightbox();
-});
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const motionOK = !reduceMotion;
+  const desktopFx = motionOK && finePointer;
 
-/* --------------------------------------------------------------------
-   Hero Renderer
-   -------------------------------------------------------------------- */
-function renderHero(hero) {
-  const badgeEl = document.getElementById('hero-badge-text');
-  if (badgeEl) badgeEl.textContent = hero.badge;
+  /* ------------------------------------------------------------------
+     Tiny helpers
+     ------------------------------------------------------------------ */
+  const stagger = (i) => `style="--i:${Math.min(i, 8)}"`;
+  const mailto = (subject) =>
+    `mailto:${data.contact.email}${subject ? '?subject=' + encodeURIComponent(subject) : ''}`;
 
-  const subtextEl = document.getElementById('hero-subtext');
-  if (subtextEl) subtextEl.textContent = hero.subtext;
+  /* ------------------------------------------------------------------
+     Renderers
+     ------------------------------------------------------------------ */
+  const SECTION_ORDER = ['about', 'skills', 'experience', 'projects', 'services', 'achievements', 'certifications', 'contact'];
+  const sectionNumber = (key) => String(SECTION_ORDER.indexOf(key) + 1).padStart(2, '0');
 
-  // Stat Chips
-  const statsContainer = document.getElementById('hero-stats-grid');
-  if (statsContainer && hero.stats) {
-    statsContainer.innerHTML = hero.stats.map(s => {
+  function renderHeaders() {
+    $$('[data-header]').forEach((el) => {
+      const key = el.dataset.header;
+      const d = data[key];
+      if (!d) return;
+      el.classList.add('reveal');
+      el.innerHTML = `
+        <span class="section-label">${sectionNumber(key)} / ${d.label}</span>
+        <h2 class="section-title">${d.heading}</h2>
+        ${d.subtitle ? `<p class="section-subtitle">${d.subtitle}</p>` : ''}`;
+    });
+  }
+
+  function renderHero() {
+    const h = data.hero;
+    $('#hero-badge-text').textContent = h.badge;
+    $('#hero-subtext').textContent = h.subtext;
+    $('#hero-lead-in').textContent = h.leadIn;
+    $('#typing-text').textContent = h.typingRoles[0];
+
+    // Split heading into words for the staggered reveal
+    const line1 = $('#hero-line1');
+    line1.textContent = '';
+    h.greeting.split(' ').forEach((word, i, arr) => {
+      const span = document.createElement('span');
+      span.className = 'w';
+      span.style.setProperty('--i', i);
+      span.textContent = word;
+      line1.appendChild(span);
+      if (i < arr.length - 1) line1.appendChild(document.createTextNode(' '));
+    });
+
+    // Resume links
+    $$('a[href$="Resume.pdf"]').forEach((a) => { a.href = h.resumeUrl; });
+
+    // Floating cards
+    h.floatingCards.forEach((c, i) => {
+      const card = $('#float-card-' + (i + 1));
+      if (!card) return;
+      $('.float-icon i', card).className = c.icon;
+      $('h3', card).textContent = c.title;
+      $('p', card).textContent = c.subtitle;
+      $('.float-badge', card).textContent = c.badge.toUpperCase();
+    });
+
+    // Stats
+    $('#stats-row').innerHTML = h.stats.map((s, i) => {
+      const start = motionOK ? '0' : String(s.value);
       const inner = `
-        <div class="stat-value">${s.value}</div>
+        <div class="stat-value" data-count="${s.value}" data-suffix="${s.suffix || ''}">${start}${s.suffix || ''}</div>
         <div class="stat-label">${s.label}</div>`;
-      // A stat with an href becomes a real link (e.g. a profile page)
       return s.href
-        ? `<a href="${s.href}" target="_blank" rel="noopener noreferrer" class="glass-card stat-chip tilt-card" data-tilt>${inner}</a>`
-        : `<div class="glass-card stat-chip tilt-card" data-tilt>${inner}</div>`;
+        ? `<a class="card lift stat reveal" ${stagger(i)} href="${s.href}" target="_blank" rel="noopener noreferrer">${inner}</a>`
+        : `<div class="card lift stat reveal" ${stagger(i)}>${inner}</div>`;
     }).join('');
   }
-}
 
-/* --------------------------------------------------------------------
-   Marquee Renderer
-   -------------------------------------------------------------------- */
-function renderMarquee(items) {
-  const track = document.getElementById('marquee-track');
-  if (!track || !items) return;
-
-  // Double items for seamless infinite loop
-  const doubleList = [...items, ...items];
-  track.innerHTML = doubleList.map(item => `
-    <div class="marquee-item">
-      <i class="${item.icon}"></i>
-      <span>${item.name}</span>
-    </div>
-  `).join('');
-}
-
-/* --------------------------------------------------------------------
-   About Renderer
-   -------------------------------------------------------------------- */
-function renderAbout(about) {
-  const textContainer = document.getElementById('about-summary-text');
-  if (textContainer && about.summary) {
-    textContainer.innerHTML = about.summary.map(p => `<p>${p}</p>`).join('');
+  function renderNav() {
+    const links = $('#nav-links');
+    links.innerHTML = data.nav.map((n, i) =>
+      `<li><a href="${n.href}" class="nav-link${i === 0 ? ' active' : ''}">${n.label}</a></li>`).join('');
   }
 
-  const highlightsContainer = document.getElementById('about-highlights-grid');
-  if (highlightsContainer && about.highlights) {
-    highlightsContainer.innerHTML = about.highlights.map(h => `
-      <div class="highlight-box">
-        <h4>${h.title}</h4>
-        <p>${h.desc}</p>
-      </div>
-    `).join('');
+  function renderMarquee() {
+    const item = (m) => `<div class="marquee-item"><i class="${m.icon}" aria-hidden="true"></i><span>${m.name}</span></div>`;
+    const one = data.marquee.map(item).join('');
+    $('#marquee-track').innerHTML = one + `<div class="marquee-item" style="display:contents" aria-hidden="true">${one}</div>`;
   }
 
-  const eduContainer = document.getElementById('about-education-content');
-  if (eduContainer && about.education) {
-    const e = about.education;
-    eduContainer.innerHTML = `
-      <div class="edu-header">
-        <div class="edu-header-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-        <div>
-          <span class="edu-meta-tag">${e.timeline}</span>
-          <h3 class="edu-title">${e.degree}</h3>
-          <p class="edu-school-line">${e.institute} • <strong>${e.cgpa}</strong></p>
-        </div>
-      </div>
-      <div class="schooling-pill">
-        <i class="fa-solid fa-school" style="margin-right: 6px; color: var(--accent-blue-light);"></i>
-        ${e.schooling}
-      </div>
-    `;
+  function renderAbout() {
+    const a = data.about;
+    $('#about-text').innerHTML = a.summary.map((p) => `<p>${p}</p>`).join('');
+    const e = a.education;
+    const edu = $('#about-edu');
+    edu.classList.add('lift');
+    edu.innerHTML = `
+      <span class="edu-years">${e.timeline}</span>
+      <h3 class="edu-degree">${e.degree}</h3>
+      <p class="edu-school"><strong>${e.institute}</strong> • ${e.cgpa}</p>
+      <p class="edu-school-line">${e.schooling}</p>`;
   }
-}
 
-/* --------------------------------------------------------------------
-   Skills Renderer
-   -------------------------------------------------------------------- */
-function renderSkills(skills) {
-  const grid = document.getElementById('skills-grid');
-  if (!grid || !skills) return;
+  function renderSkills() {
+    $('#skills-grid').innerHTML = data.skills.groups.map((g, i) => `
+      <div class="card lift skill-group reveal" ${stagger(i)}>
+        <h3>${g.category}</h3>
+        <div class="chips">${g.items.map((s) => `<span class="chip">${s}</span>`).join('')}</div>
+      </div>`).join('');
+  }
 
-  grid.innerHTML = skills.map(cat => `
-    <div class="glass-card skill-category-card tilt-card reveal" data-tilt>
-      <div class="skill-cat-header">
-        <div class="skill-cat-icon"><i class="${cat.icon}"></i></div>
-        <h3 class="skill-cat-title">${cat.category}</h3>
-      </div>
-      <div class="skill-chips">
-        ${cat.items.map(skill => `<span class="skill-chip">${skill}</span>`).join('')}
-      </div>
-    </div>
-  `).join('');
-}
-
-/* --------------------------------------------------------------------
-   Experience Timeline Renderer
-   -------------------------------------------------------------------- */
-function renderExperience(expList) {
-  const timeline = document.getElementById('experience-timeline');
-  if (!timeline || !expList) return;
-
-  timeline.innerHTML = expList.map((item, index) => {
-    if (item.type === 'training') {
+  function renderExperience() {
+    $('#timeline').innerHTML = data.experience.items.map((item, i) => {
+      if (item.compact) {
+        return `
+          <div class="t-item reveal" ${stagger(i)}>
+            <span class="t-dot" aria-hidden="true"></span>
+            <div class="card">
+              <div class="t-head"><h3 class="t-role">${item.role}</h3></div>
+              <div class="t-compact-list">
+                ${item.items.map((t) => `<div class="t-compact-item"><h4>${t.name}</h4><p>${t.meta}</p></div>`).join('')}
+              </div>
+            </div>
+          </div>`;
+      }
       return `
-        <div class="timeline-item reveal">
-          <div class="timeline-marker"></div>
-          <div class="glass-card timeline-content">
-            <div class="timeline-header">
+        <div class="t-item reveal" ${stagger(i)}>
+          <span class="t-dot" aria-hidden="true"></span>
+          <div class="card">
+            <div class="t-head">
               <div>
-                <h3 class="timeline-role">${item.role}</h3>
-                <span class="timeline-org">${item.organization}</span>
+                <h3 class="t-role">${item.role}</h3>
+                <p class="t-org">${item.organization}${item.link ? ` • <a href="${item.link}" target="_blank" rel="noopener noreferrer">fairtoursandtravels.com</a>` : ''}</p>
               </div>
-              <span class="timeline-period">${item.period}</span>
-            </div>
-            <div class="compact-training-list">
-              ${item.compactItems.map(t => `
-                <div class="training-item">
-                  <h4>${t.name}</h4>
-                  <p>${t.issuer} (${t.period})</p>
-                  ${t.id ? `<small style="color: var(--accent-blue-light);">Credential: ${t.id}</small>` : ''}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    return `
-      <div class="timeline-item ${index === 0 ? 'active' : ''} reveal">
-        <div class="timeline-marker"></div>
-        <div class="glass-card timeline-content">
-          <div class="timeline-header">
-            <div>
-              <h3 class="timeline-role">${item.role}</h3>
-              <div class="timeline-org">
-                <i class="fa-solid fa-briefcase"></i> ${item.organization}
-                ${item.link ? `• <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue-light); text-decoration: none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live</a>` : ''}
+              <div class="t-meta">
+                <span class="tag tag-accent">${item.badge}</span>
+                <span class="tag">${item.period}</span>
               </div>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span class="float-badge">${item.badge}</span>
-              <span class="timeline-period">${item.period}</span>
+            <p class="t-desc">${item.description}</p>
+            <ul class="t-done">${item.done.map((d) => `<li>${d}</li>`).join('')}</ul>
+            ${item.next ? `<p class="t-next">${item.next}</p>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderProjects() {
+    const visible = data.projects.items.filter((p) => p.showJobRec !== false);
+    $('#projects-grid').innerHTML = visible.map((p, i) => {
+      const multi = p.images && p.images.length > 1;
+      const shotAlt = (n) => `${p.title} screenshot${multi ? ` ${n} of ${p.images.length}` : ''}`;
+      return `
+        <article class="card lift project${i === 0 ? ' featured' : ''} reveal" ${stagger(i)}>
+          <div class="project-shot">
+            <img src="${p.images[0]}" alt="${shotAlt(1)}" id="proj-img-${p.id}" width="1280" height="720" loading="lazy" decoding="async">
+            <span class="tag project-status">${p.status}</span>
+            ${multi ? `<div class="shot-dots" role="group" aria-label="${p.title} screenshots">
+              ${p.images.map((src, n) => `<button type="button" class="shot-dot" data-project="${p.id}" data-index="${n}" aria-pressed="${n === 0}" aria-label="Show screenshot ${n + 1}"></button>`).join('')}
+            </div>` : ''}
+          </div>
+          <div class="project-body">
+            <h3 class="project-title">${p.title}</h3>
+            <p class="project-desc">${p.description}</p>
+            <div class="chips">${p.tech.map((t) => `<span class="chip">${t}</span>`).join('')}</div>
+            <div class="project-actions">
+              ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Live<span class="sr-only"> site of ${p.title}</span></a>` : ''}
+              ${p.github ? `<a href="${p.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub<span class="sr-only"> repository of ${p.title}</span></a>` : ''}
             </div>
           </div>
-          <p style="color: var(--text-secondary); margin-bottom: 12px; font-size: 0.95rem;">${item.description}</p>
-          <ul class="timeline-bullets">
-            ${item.completedHighlights.map(h => `<li>${h}</li>`).join('')}
-          </ul>
-          ${item.nextRoadmap ? `<div class="timeline-roadmap"><i class="fa-solid fa-compass" style="margin-right:6px;"></i>${item.nextRoadmap}</div>` : ''}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
+        </article>`;
+    }).join('');
 
-/* --------------------------------------------------------------------
-   Projects Renderer
-   -------------------------------------------------------------------- */
-function renderProjects(projects) {
-  const grid = document.getElementById('projects-grid');
-  if (!grid || !projects) return;
-
-  // Filter out items where showJobRec is false
-  const activeProjects = projects.filter(p => p.showJobRec !== false);
-
-  grid.innerHTML = activeProjects.map(p => {
-    const isFairTours = p.id === 'fairtours' && p.images && p.images.length > 1;
-
-    return `
-      <div class="glass-card project-card tilt-card reveal" data-tilt>
-        <div class="project-thumbnail-wrapper" id="thumb-wrapper-${p.id}">
-          <img 
-            src="${p.images[0]}" 
-            alt="${p.title}" 
-            class="project-thumbnail" 
-            id="proj-img-${p.id}" 
-            loading="lazy"
-            width="800"
-            height="450"
-          >
-          <span class="project-badge ${p.status.includes('Live') ? 'badge-live' : 'badge-progress'}">${p.status}</span>
-          ${isFairTours ? `
-            <div class="screenshot-tabs">
-              ${p.images.map((_, i) => `
-                <button 
-                  class="thumb-dot ${i === 0 ? 'active' : ''}" 
-                  onclick="switchProjectImage('${p.id}', '${p.images[i]}', this)"
-                  aria-label="View screenshot ${i + 1}"
-                ></button>
-              `).join('')}
-            </div>
-          ` : ''}
-        </div>
-        <div class="project-body">
-          <h3 class="project-title">${p.title}</h3>
-          <p class="project-tagline">${p.tagline}</p>
-          <p class="project-desc">${p.description}</p>
-          ${p.metrics ? `<div class="project-metrics"><i class="fa-solid fa-gauge-high"></i> ${p.metrics}</div>` : ''}
-          <div class="project-tech-tags">
-            ${p.tech.map(t => `<span class="project-tech-tag">${t}</span>`).join('')}
-          </div>
-          <div class="project-actions">
-            ${p.live ? `
-              <a href="${p.live}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-arrow-up-right-from-square"></i> Live Site
-              </a>
-            ` : ''}
-            ${p.github ? `
-              <a href="${p.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
-                <i class="fa-brands fa-github"></i> GitHub
-              </a>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-// Global switcher for Fair Tours screenshots
-window.switchProjectImage = function(projId, src, btn) {
-  const img = document.getElementById(`proj-img-${projId}`);
-  if (img) img.src = src;
-  const parent = btn.parentElement;
-  if (parent) {
-    parent.querySelectorAll('.thumb-dot').forEach(d => d.classList.remove('active'));
-    btn.classList.add('active');
-  }
-};
-
-/* --------------------------------------------------------------------
-   Services Renderer
-   -------------------------------------------------------------------- */
-function renderServices(services) {
-  const grid = document.getElementById('services-grid');
-  if (!grid || !services) return;
-
-  grid.innerHTML = services.map(s => `
-    <div class="glass-card service-card tilt-card reveal" data-tilt>
-      <div>
-        <div class="service-header">
-          <div class="service-icon"><i class="${s.icon}"></i></div>
-          <span class="service-badge">${s.badge}</span>
-        </div>
-        <h3 class="service-title">${s.title}</h3>
-        <p class="service-desc">${s.description}</p>
-        <ul class="service-features">
-          ${s.features.map(f => `<li><i class="fa-solid fa-circle-check"></i> ${f}</li>`).join('')}
-        </ul>
-      </div>
-      <a href="mailto:ziyankhan809@gmail.com?subject=${encodeURIComponent(s.ctaMailSubject)}" class="btn btn-secondary btn-sm" style="width: 100%; margin-top: 20px;">
-        <i class="fa-solid fa-envelope"></i> ${s.ctaText}
-      </a>
-    </div>
-  `).join('');
-}
-
-/* --------------------------------------------------------------------
-   Achievements Renderer
-   -------------------------------------------------------------------- */
-function renderAchievements(achievements) {
-  const grid = document.getElementById('achievements-grid');
-  if (!grid || !achievements) return;
-
-  grid.innerHTML = achievements.map(a => `
-    <div class="glass-card achievement-card tilt-card reveal" data-tilt>
-      <div class="achievement-icon"><i class="${a.icon}"></i></div>
-      <div class="achievement-info">
-        <h3>${a.title}</h3>
-        <p>${a.desc}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-/* --------------------------------------------------------------------
-   Certifications Renderer (Featured 4 + Expandable)
-   -------------------------------------------------------------------- */
-let certsExpanded = false;
-
-function renderCertifications(certConfig) {
-  const grid = document.getElementById('certs-grid');
-  const toggleBtn = document.getElementById('certs-toggle-btn');
-  if (!grid || !certConfig) return;
-
-  const itemsToRender = certsExpanded ? certConfig.items : certConfig.items.slice(0, certConfig.featuredCount);
-
-  grid.innerHTML = itemsToRender.map(c => `
-    <div class="glass-card cert-card tilt-card reveal" data-tilt>
-      <div class="cert-preview-wrapper" onclick="openCertLightbox('${c.image}', '${c.title}')">
-        <img src="${c.image}" alt="${c.title}" class="cert-preview-img" loading="lazy">
-      </div>
-      <div>
-        <h3 class="cert-title">${c.title}</h3>
-        <p class="cert-issuer">${c.issuer}</p>
-        ${c.credentialId ? `<p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">ID: ${c.credentialId}</p>` : ''}
-        <div class="cert-tags">
-          ${c.tags ? c.tags.map(t => `<span class="cert-tag">${t}</span>`).join('') : ''}
-        </div>
-      </div>
-      <button class="btn btn-secondary btn-sm" onclick="openCertLightbox('${c.image}', '${c.title}')">
-        <i class="fa-solid fa-expand"></i> View Certificate
-      </button>
-    </div>
-  `).join('');
-
-  if (toggleBtn) {
-    toggleBtn.innerHTML = certsExpanded 
-      ? '<i class="fa-solid fa-chevron-up"></i> Show Less Certifications'
-      : `<i class="fa-solid fa-chevron-down"></i> Show All Certifications (${certConfig.items.length})`;
-  }
-}
-
-window.toggleAllCerts = function() {
-  certsExpanded = !certsExpanded;
-  renderCertifications(window.PORTFOLIO_DATA.certifications);
-};
-
-/* --------------------------------------------------------------------
-   Contact Renderer
-   -------------------------------------------------------------------- */
-function renderContact(contact) {
-  const container = document.getElementById('contact-container');
-  if (!container || !contact) return;
-
-  container.innerHTML = `
-    <div class="glass-card contact-card tilt-card" data-tilt>
-      <span class="section-tag"><i class="fa-solid fa-paper-plane"></i> Get in Touch</span>
-      <h2>${contact.heading}</h2>
-      <p>${contact.subheading}</p>
-      
-      <div class="contact-buttons-group">
-        <a href="mailto:${contact.email}" class="btn btn-primary">
-          <i class="fa-solid fa-envelope"></i> Email Me (${contact.email})
-        </a>
-        <a href="${contact.linkedin}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-          <i class="fa-brands fa-linkedin"></i> LinkedIn
-        </a>
-        <a href="${contact.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
-          <i class="fa-brands fa-github"></i> GitHub
-        </a>
-        <a href="${contact.resumeUrl}" download class="btn btn-secondary">
-          <i class="fa-solid fa-file-arrow-down"></i> Download Resume
-        </a>
-      </div>
-
-      <div class="contact-location-pill">
-        <i class="fa-solid fa-location-dot" style="color: var(--accent-blue-light);"></i>
-        <span>${contact.location}</span>
-      </div>
-    </div>
-  `;
-}
-
-/* --------------------------------------------------------------------
-   Footer Renderer
-   -------------------------------------------------------------------- */
-function renderFooter(footer) {
-  const copyEl = document.getElementById('footer-copy');
-  if (copyEl && footer) copyEl.textContent = footer.copyright;
-
-  const tagEl = document.getElementById('footer-tagline');
-  if (tagEl && footer) tagEl.textContent = footer.tagline;
-}
-
-/* --------------------------------------------------------------------
-   Interactive Enhancements
-   -------------------------------------------------------------------- */
-
-// Scroll Progress Bar
-function initScrollProgressBar() {
-  const bar = document.getElementById('scroll-progress');
-  if (!bar) return;
-
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-    const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (winScroll / height) * 100;
-    bar.style.width = scrolled + '%';
-  }, { passive: true });
-}
-
-// Typing Text Effect in Hero
-// type 70ms/char -> hold 1.6s -> delete 40ms/char -> next role (loops through all roles)
-function initTypingEffect(roles) {
-  const el = document.getElementById('typing-text');
-  const cursor = document.getElementById('typing-cursor');
-  if (!el || !roles || !roles.length) return;
-
-  const TYPE_MS = 70;
-  const HOLD_MS = 1600;
-  const DELETE_MS = 40;
-  const GAP_MS = 300; // short beat before the next role starts
-
-  // Reduced motion: first role, static, no cursor
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    el.textContent = roles[0];
-    if (cursor) cursor.style.display = 'none';
-    return;
-  }
-
-  let roleIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  el.textContent = '';
-
-  function tick() {
-    const current = roles[roleIndex];
-    let delay;
-
-    if (!isDeleting) {
-      charIndex++;
-      el.textContent = current.slice(0, charIndex);
-      delay = TYPE_MS;
-      if (charIndex === current.length) {
-        isDeleting = true;
-        delay = HOLD_MS;
-      }
-    } else {
-      charIndex--;
-      el.textContent = current.slice(0, charIndex);
-      delay = DELETE_MS;
-      if (charIndex === 0) {
-        isDeleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        delay = GAP_MS;
-      }
-    }
-    setTimeout(tick, delay);
-  }
-
-  setTimeout(tick, 400);
-}
-
-// Hero Photo 3D Tilt, Parallax Layers, and Cursor Glow
-function initHeroParallaxAndTilt() {
-  const scene = document.getElementById('photo-card-scene');
-  if (!scene) return;
-
-  // Desktop pointer devices only
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const ring = document.getElementById('conic-ring');
-  const glow = document.getElementById('photo-glow');
-  const photoFrame = document.getElementById('photo-frame');
-  const card1 = document.getElementById('float-card-1');
-  const card2 = document.getElementById('float-card-2');
-
-  let rafId = null;
-  let targetRotateX = 0, targetRotateY = 0;
-  let currentRotateX = 0, currentRotateY = 0;
-  let isHovering = false;
-
-  function update() {
-    // Smooth interpolation (lerp)
-    currentRotateX += (targetRotateX - currentRotateX) * 0.12;
-    currentRotateY += (targetRotateY - currentRotateY) * 0.12;
-
-    // 1. 3D tilt on the main scene container (up to ~10 deg)
-    scene.style.transform = `perspective(1000px) rotateX(${currentRotateX.toFixed(2)}deg) rotateY(${currentRotateY.toFixed(2)}deg)`;
-
-    // 2. Parallax depth: cards the most (factor ~1.4), ring medium (factor ~0.7), glow least (factor ~0.3)
-    const px = currentRotateY / 10; // normalized -1 to 1
-    const py = -currentRotateX / 10;
-
-    if (card1) {
-      card1.style.transform = `translate3d(${(px * 16).toFixed(1)}px, ${(py * 16).toFixed(1)}px, 45px)`;
-    }
-    if (card2) {
-      card2.style.transform = `translate3d(${(px * -16).toFixed(1)}px, ${(py * -16).toFixed(1)}px, 45px)`;
-    }
-    if (ring) {
-      ring.style.transform = `translate3d(${(px * 8).toFixed(1)}px, ${(py * 8).toFixed(1)}px, 20px)`;
-    }
-    if (glow) {
-      glow.style.transform = `translate3d(${(px * 4).toFixed(1)}px, ${(py * 4).toFixed(1)}px, 0px)`;
-    }
-
-    if (isHovering || Math.abs(targetRotateX - currentRotateX) > 0.05 || Math.abs(targetRotateY - currentRotateY) > 0.05) {
-      rafId = requestAnimationFrame(update);
-    } else {
-      rafId = null;
-      if (!isHovering) {
-        scene.style.transform = '';
-        if (card1) card1.style.transform = '';
-        if (card2) card2.style.transform = '';
-        if (ring) ring.style.transform = '';
-        if (glow) glow.style.transform = '';
-      }
-    }
-  }
-
-  scene.addEventListener('mousemove', (e) => {
-    isHovering = true;
-    const rect = scene.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Normalize -1 to 1
-    const nx = (x / rect.width) * 2 - 1;
-    const ny = (y / rect.height) * 2 - 1;
-
-    targetRotateX = -ny * 10;
-    targetRotateY = nx * 10;
-
-    // Cursor glow follow
-    if (photoFrame) {
-      photoFrame.style.setProperty('--mouse-x', `${((x / rect.width) * 100).toFixed(1)}%`);
-      photoFrame.style.setProperty('--mouse-y', `${((y / rect.height) * 100).toFixed(1)}%`);
-    }
-
-    if (!rafId) {
-      rafId = requestAnimationFrame(update);
-    }
-  });
-
-  scene.addEventListener('mouseleave', () => {
-    isHovering = false;
-    targetRotateX = 0;
-    targetRotateY = 0;
-    if (!rafId) {
-      rafId = requestAnimationFrame(update);
-    }
-  });
-}
-
-// Navbar Scroll Effect, Mobile Menu & Active Nav Highlight
-function initNavbar() {
-  const nav = document.querySelector('.navbar');
-  const toggleBtn = document.getElementById('mobile-toggle');
-  const navLinks = document.getElementById('nav-links');
-
-  // Sticky blur on scroll
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 30) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  }, { passive: true });
-
-  // Mobile drawer toggle
-  if (toggleBtn && navLinks) {
-    toggleBtn.addEventListener('click', () => {
-      const isOpen = navLinks.classList.toggle('open');
-      toggleBtn.setAttribute('aria-expanded', isOpen);
-      toggleBtn.innerHTML = isOpen 
-        ? '<i class="fa-solid fa-xmark"></i>' 
-        : '<i class="fa-solid fa-bars"></i>';
-    });
-
-    // Close mobile nav on link click
-    navLinks.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('open');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        toggleBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
-      });
+    $('#projects-grid').addEventListener('click', (e) => {
+      const btn = e.target.closest('.shot-dot');
+      if (!btn) return;
+      const p = data.projects.items.find((x) => x.id === btn.dataset.project);
+      const n = Number(btn.dataset.index);
+      const img = $('#proj-img-' + p.id);
+      img.src = p.images[n];
+      img.alt = `${p.title} screenshot ${n + 1} of ${p.images.length}`;
+      $$('.shot-dot', btn.parentElement).forEach((d) => d.setAttribute('aria-pressed', String(d === btn)));
     });
   }
 
-  // Active Link Observer
-  const sections = document.querySelectorAll('section[id]');
-  const links = document.querySelectorAll('.nav-link');
+  function renderServices() {
+    const s = data.services;
+    $('#services-grid').innerHTML = s.items.map((it, i) => `
+      <div class="card lift service reveal" ${stagger(i)}>
+        <div class="service-icon"><i class="${it.icon}" aria-hidden="true"></i></div>
+        <h3>${it.title}</h3>
+        <p>${it.description}</p>
+        <a href="${mailto(it.mailSubject)}" class="btn btn-secondary btn-sm">${s.quoteText}<span class="sr-only">: ${it.title}</span></a>
+      </div>`).join('');
+  }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.getAttribute('id');
-        links.forEach(l => {
-          if (l.getAttribute('href') === `#${id}`) {
-            l.classList.add('active');
-          } else {
-            l.classList.remove('active');
-          }
+  function renderAchievements() {
+    $('#ach-list').innerHTML = data.achievements.items.map((a, i) => `
+      <li class="ach-item reveal" ${stagger(i)}>
+        <i class="${a.icon}" aria-hidden="true"></i>
+        <p>${a.text}</p>
+      </li>`).join('');
+  }
+
+  function renderCerts() {
+    const c = data.certifications;
+    const grid = $('#certs-grid');
+    grid.innerHTML = c.items.map((it, i) => {
+      const extra = i >= c.featuredCount;
+      return `
+        <div class="card lift cert${extra ? ' cert-extra' : ' reveal'}" ${extra ? 'hidden' : stagger(i)}>
+          <button type="button" class="cert-thumb" data-src="${it.image}" data-title="${it.title}" aria-label="View certificate: ${it.title}">
+            <img src="${it.image}" alt="${it.title} certificate" width="640" height="480" loading="lazy" decoding="async">
+          </button>
+          <div>
+            <h3>${it.title}</h3>
+            <p class="cert-issuer">${it.issuer}</p>
+            ${it.credentialId ? `<p class="cert-id">ID: ${it.credentialId}</p>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    const toggle = $('#certs-toggle');
+    if (c.items.length <= c.featuredCount) { toggle.parentElement.remove(); return; }
+    toggle.textContent = `${c.showAllText} (${c.items.length})`;
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') === 'true';
+      $$('.cert-extra', grid).forEach((el) => { el.hidden = open; });
+      toggle.setAttribute('aria-expanded', String(!open));
+      toggle.textContent = open ? `${c.showAllText} (${c.items.length})` : c.showLessText;
+    });
+  }
+
+  function renderContact() {
+    const c = data.contact;
+    $('#contact-card').innerHTML = `
+      <span class="section-label">${sectionNumber('contact')} / ${c.label}</span>
+      <h2>${c.heading}</h2>
+      <div class="contact-actions">
+        <a href="mailto:${c.email}" class="btn btn-primary magnetic"><i class="fa-solid fa-envelope" aria-hidden="true"></i> Email me</a>
+        <a href="${c.linkedin}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn</a>
+        <a href="${c.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub</a>
+        <a href="${c.resumeUrl}" download class="btn btn-secondary"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download Resume</a>
+      </div>`;
+  }
+
+  function renderFooter() {
+    $('#footer-copy').textContent = data.footer.copyright;
+    $('#f-linkedin').href = data.contact.linkedin;
+    $('#f-github').href = data.contact.github;
+    $('#f-email').href = 'mailto:' + data.contact.email;
+  }
+
+  /* ------------------------------------------------------------------
+     Interactions
+     ------------------------------------------------------------------ */
+
+  // Scroll progress bar + navbar state, one rAF-throttled handler
+  function initScroll() {
+    const bar = $('#scroll-progress');
+    const nav = $('.navbar');
+    const timeline = $('#timeline');
+    let ticking = false;
+
+    function update() {
+      ticking = false;
+      const max = root.scrollHeight - root.clientHeight;
+      bar.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+      nav.classList.toggle('scrolled', window.scrollY > 24);
+
+      // Timeline line "draws" as you scroll; dots light up
+      if (timeline) {
+        const rect = timeline.getBoundingClientRect();
+        const line = window.innerHeight * 0.6;
+        const p = Math.max(0, Math.min(1, (line - rect.top) / rect.height));
+        timeline.style.setProperty('--p', p.toFixed(3));
+        $$('.t-item', timeline).forEach((item) => {
+          const dot = $('.t-dot', item).getBoundingClientRect();
+          item.classList.toggle('lit', dot.top < line);
         });
       }
-    });
-  }, { threshold: 0.35 });
-
-  sections.forEach(s => observer.observe(s));
-}
-
-// Scroll Reveal with IntersectionObserver
-function initScrollReveal() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('active'));
-    return;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('active');
+  // Mobile menu
+  function initMenu() {
+    const btn = $('#menu-toggle');
+    const links = $('#nav-links');
+    const icon = $('i', btn);
+    const setOpen = (open) => {
+      links.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      btn.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+      icon.className = open ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    };
+    btn.addEventListener('click', () => setOpen(!links.classList.contains('open')));
+    links.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && links.classList.contains('open')) { setOpen(false); btn.focus(); }
+    });
+  }
+
+  // Active section highlight
+  function initActiveNav() {
+    const links = $$('.nav-link');
+    const sections = $$('main section[id]');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        links.forEach((l) => {
+          const on = l.getAttribute('href') === '#' + id;
+          l.classList.toggle('active', on);
+          if (on) l.setAttribute('aria-current', 'true'); else l.removeAttribute('aria-current');
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    sections.forEach((s) => io.observe(s));
+  }
+
+  // Scroll reveal (80ms stagger via --i)
+  function initReveal() {
+    const els = $$('.reveal');
+    if (!motionOK || !('IntersectionObserver' in window)) {
+      els.forEach((el) => el.classList.add('in', 'settled'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        el.classList.add('in');
+        // After the reveal finishes, hand transform back to hover/tilt transitions
+        setTimeout(() => el.classList.add('settled'), 900 + (Number(getComputedStyle(el).getPropertyValue('--i')) || 0) * 80);
+        io.unobserve(el);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    els.forEach((el) => io.observe(el));
+
+    // Cert cards revealed by the toggle are not observed; make them visible
+    $('#certs-toggle') && $('#certs-toggle').addEventListener('click', () => {
+      $$('.cert-extra').forEach((el) => el.classList.add('in', 'settled', 'reveal'));
+    });
+  }
+
+  // Hero heading words, then typing line
+  function initHeroSequence() {
+    const roles = data.hero.typingRoles;
+    const text = $('#typing-text');
+    if (!motionOK) { text.textContent = roles[0]; return; }
+
+    const words = $$('#hero-line1 .w').length;
+    requestAnimationFrame(() => root.classList.add('ready'));
+    const startTyping = () => {
+      root.classList.add('typing-on');
+      runTyping(text, roles);
+    };
+    setTimeout(startTyping, words * 110 + 750);
+  }
+
+  function runTyping(el, roles) {
+    const TYPE = 70, HOLD = 1600, DELETE = 40, GAP = 300;
+    let r = 0, c = 0, deleting = false;
+    el.textContent = '';
+    (function tick() {
+      const cur = roles[r];
+      let delay;
+      if (!deleting) {
+        c++;
+        el.textContent = cur.slice(0, c);
+        delay = TYPE;
+        if (c === cur.length) { deleting = true; delay = HOLD; }
+      } else {
+        c--;
+        el.textContent = cur.slice(0, c);
+        delay = DELETE;
+        if (c === 0) { deleting = false; r = (r + 1) % roles.length; delay = GAP; }
       }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-  // Observe existing and dynamically added reveals
-  const observeReveals = () => {
-    document.querySelectorAll('.reveal:not(.observed)').forEach(el => {
-      el.classList.add('observed');
-      observer.observe(el);
-    });
-  };
-
-  observeReveals();
-  // Call periodically or after DOM mutations
-  setTimeout(observeReveals, 400);
-}
-
-// 3D Card Tilt (Desktop mouse hover only)
-function init3DTilt() {
-  // Only enable on desktop pointer devices
-  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  document.addEventListener('mousemove', (e) => {
-    const card = e.target.closest('[data-tilt]');
-    if (!card) return;
-
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -5;
-    const rotateY = ((x - centerX) / centerX) * 5;
-
-    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
-  });
-
-  document.addEventListener('mouseout', (e) => {
-    const card = e.target.closest('[data-tilt]');
-    if (card) {
-      card.style.transform = '';
-    }
-  });
-}
-
-// Certificate Lightbox
-function initLightbox() {
-  const modal = document.getElementById('cert-modal');
-  const modalImg = document.getElementById('modal-img');
-  const closeBtn = document.getElementById('modal-close');
-
-  window.openCertLightbox = function(src, title) {
-    if (!modal || !modalImg) return;
-    modalImg.src = src;
-    modalImg.alt = title || 'Certificate';
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  };
-
-  function closeModal() {
-    if (!modal) return;
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
+      setTimeout(tick, delay);
+    })();
   }
 
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
+  // Stats counters
+  function initCounters() {
+    const els = $$('.stat-value[data-count]');
+    const finish = (el) => { el.textContent = el.dataset.count + el.dataset.suffix; };
+    if (!motionOK || !('IntersectionObserver' in window)) { els.forEach(finish); return; }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        io.unobserve(el);
+        const target = Number(el.dataset.count);
+        const dur = 1100;
+        const t0 = performance.now();
+        (function step(now) {
+          const t = Math.min(1, (now - t0) / dur);
+          const eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(target * eased) + el.dataset.suffix;
+          if (t < 1) requestAnimationFrame(step); else finish(el);
+        })(t0);
+      });
+    }, { threshold: 0.6 });
+    els.forEach((el) => io.observe(el));
+  }
+
+  // Card spotlight (all pointers that are a mouse) + 3D tilt (desktop only)
+  function initCards() {
+    document.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const card = e.target.closest && e.target.closest('.card');
+      if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+
+      if (desktopFx && card.classList.contains('lift')) {
+        const rx = ((e.clientY - r.top) / r.height - 0.5) * -16; // max 8deg
+        const ry = ((e.clientX - r.left) / r.width - 0.5) * 16;
+        card.style.transform = `perspective(900px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+      }
+    }, { passive: true });
+
+    if (desktopFx) {
+      document.addEventListener('pointerout', (e) => {
+        const card = e.target.closest && e.target.closest('.card.lift');
+        if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
+      });
+    }
+  }
+
+  // Cursor glow + ring, magnetic buttons (desktop only)
+  function initCursor() {
+    if (!desktopFx) return;
+    const glow = $('#cursor-glow');
+    const ring = $('#cursor-ring');
+    let x = -100, y = -100, rx = x, ry = y, raf = null;
+
+    const loop = () => {
+      rx += (x - rx) * 0.18;
+      ry += (y - ry) * 0.18;
+      ring.style.transform = `translate3d(${rx.toFixed(1)}px, ${ry.toFixed(1)}px, 0)`;
+      raf = Math.abs(x - rx) > 0.1 || Math.abs(y - ry) > 0.1 ? requestAnimationFrame(loop) : null;
+    };
+
+    window.addEventListener('mousemove', (e) => {
+      x = e.clientX; y = e.clientY;
+      glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      glow.classList.add('on');
+      ring.classList.add('on');
+      ring.classList.toggle('grow', !!e.target.closest('a, button, [role="button"], .cert-thumb, input, textarea'));
+      if (!raf) raf = requestAnimationFrame(loop);
+    }, { passive: true });
+    document.addEventListener('mouseleave', () => { glow.classList.remove('on'); ring.classList.remove('on'); });
+
+    // Magnetic primary buttons
+    $$('.magnetic').forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const dx = (e.clientX - (r.left + r.width / 2)) * 0.25;
+        const dy = (e.clientY - (r.top + r.height / 2)) * 0.35;
+        btn.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
     });
   }
 
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
-      closeModal();
+  // Hero photo: tilt max 10deg + parallax (cards most, ring medium, glow least)
+  function initHeroParallax() {
+    if (!desktopFx) return;
+    const scene = $('#photo-scene');
+    const ring = $('#photo-ring');
+    const glow = $('#photo-glow');
+    const c1 = $('#float-card-1');
+    const c2 = $('#float-card-2');
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = null, hover = false;
+
+    function frame() {
+      cx += (tx - cx) * 0.12;
+      cy += (ty - cy) * 0.12;
+      scene.style.transform = `perspective(1000px) rotateX(${cx.toFixed(2)}deg) rotateY(${cy.toFixed(2)}deg)`;
+      const px = cy / 10, py = -cx / 10;
+      c1.style.transform = `translate3d(${(px * 18).toFixed(1)}px, ${(py * 18).toFixed(1)}px, 45px)`;
+      c2.style.transform = `translate3d(${(px * -18).toFixed(1)}px, ${(py * -18).toFixed(1)}px, 45px)`;
+      ring.style.transform = `translate3d(${(px * 9).toFixed(1)}px, ${(py * 9).toFixed(1)}px, 20px)`;
+      glow.style.transform = `translate3d(${(px * 4).toFixed(1)}px, ${(py * 4).toFixed(1)}px, 0)`;
+      if (hover || Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05) {
+        raf = requestAnimationFrame(frame);
+      } else {
+        raf = null;
+        [scene, c1, c2, ring, glow].forEach((el) => { el.style.transform = ''; });
+      }
     }
-  });
-}
+    scene.addEventListener('mousemove', (e) => {
+      hover = true;
+      const r = scene.getBoundingClientRect();
+      const nx = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const ny = ((e.clientY - r.top) / r.height) * 2 - 1;
+      tx = -ny * 10;
+      ty = nx * 10;
+      if (!raf) raf = requestAnimationFrame(frame);
+    });
+    scene.addEventListener('mouseleave', () => {
+      hover = false; tx = 0; ty = 0;
+      if (!raf) raf = requestAnimationFrame(frame);
+    });
+  }
+
+  // Certificate lightbox with focus handling
+  function initLightbox() {
+    const modal = $('#cert-modal');
+    const img = $('#modal-img');
+    const close = $('#modal-close');
+    let opener = null;
+
+    const open = (btn) => {
+      opener = btn;
+      img.src = btn.dataset.src;
+      img.alt = btn.dataset.title + ' certificate';
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      close.focus();
+    };
+    const shut = () => {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      if (opener) opener.focus();
+    };
+
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.cert-thumb');
+      if (btn) open(btn);
+    });
+    close.addEventListener('click', shut);
+    modal.addEventListener('click', (e) => { if (e.target === modal) shut(); });
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('open')) return;
+      if (e.key === 'Escape') shut();
+      if (e.key === 'Tab') { e.preventDefault(); close.focus(); } // only one focusable control
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Boot
+     ------------------------------------------------------------------ */
+  function boot() {
+    renderNav();
+    renderHero();
+    renderMarquee();
+    renderHeaders();
+    renderAbout();
+    renderSkills();
+    renderExperience();
+    renderProjects();
+    renderServices();
+    renderAchievements();
+    renderCerts();
+    renderContact();
+    renderFooter();
+
+    initScroll();
+    initMenu();
+    initActiveNav();
+    initReveal();
+    initHeroSequence();
+    initCounters();
+    initCards();
+    initCursor();
+    initHeroParallax();
+    initLightbox();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+})();

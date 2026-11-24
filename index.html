@@ -4,17 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Ziyan Khan | Python Django & WordPress Developer</title>
-    
+    <script>document.documentElement.classList.add('js');</script>
+
     <!-- SEO & Metadata -->
     <meta name="description" content="Portfolio of Ziyan Khan — Python Django & WordPress/SEO Developer from Bhopal. Building full-stack web applications, REST APIs, and SEO-optimized business websites.">
     <meta name="keywords" content="Ziyan Khan, Python Developer, Django Developer, WordPress Developer, SEO Bhopal, Web Developer Bhopal, Indore Developer, LNCT Bhopal, Full Stack Developer">
     <meta name="author" content="Ziyan Khan">
     <link rel="canonical" href="https://portfoliyo-olive.vercel.app/">
-    
-    <!-- Favicon -->
+
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="alternate icon" href="favicon.svg">
-    <meta name="theme-color" content="#070B1A">
+    <meta name="theme-color" content="#000000">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
@@ -22,6 +22,8 @@
     <meta property="og:title" content="Ziyan Khan | Python Django & WordPress Developer">
     <meta property="og:description" content="Final-year B.Tech CSE (AI/ML) student from Bhopal building Django + React web apps and SEO-optimized WordPress websites for real businesses.">
     <meta property="og:image" content="https://portfoliyo-olive.vercel.app/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
@@ -30,40 +32,33 @@
     <meta name="twitter:description" content="Final-year B.Tech CSE (AI/ML) student from Bhopal building Django + React web apps and SEO-optimized WordPress websites for real businesses.">
     <meta name="twitter:image" content="https://portfoliyo-olive.vercel.app/og.png">
 
-    <!-- Google Fonts Preconnect & Stylesheet -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Hero photo is the likely LCP element -->
+    <link rel="preload" as="image" href="ziyan.webp" type="image/webp" fetchpriority="high">
 
-    <!-- Custom Modern Aurora Stylesheet -->
+    <!-- Font Awesome (loaded without blocking first paint) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></noscript>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <a href="#home" class="skip-link">Skip to content</a>
 
-    <!-- Scroll Progress Indicator -->
     <div id="scroll-progress" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-grain" aria-hidden="true"></div>
+    <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
 
-    <!-- Background Aurora Ambient Glow & Dotted Grid -->
-    <div class="aurora-bg" aria-hidden="true">
-        <div class="aurora-orb orb-1"></div>
-        <div class="aurora-orb orb-2"></div>
-        <div class="aurora-orb orb-3"></div>
-    </div>
-    <div class="grid-overlay" aria-hidden="true"></div>
-
-    <!-- Navigation Header -->
     <header>
-        <nav class="navbar" aria-label="Main Navigation">
+        <nav class="navbar" aria-label="Main navigation">
             <div class="container nav-container">
-                <a href="#home" class="nav-brand" aria-label="Ziyan Khan Home">
-                    <div class="brand-icon">
-                        <i class="fa-solid fa-code"></i>
-                    </div>
-                    <span>Ziyan Khan</span>
-                </a>
+                <a href="#home" class="nav-brand" aria-label="Ziyan Khan, home">Ziyan Khan</a>
 
                 <ul class="nav-links" id="nav-links">
                     <li><a href="#home" class="nav-link active">Home</a></li>
@@ -77,272 +72,165 @@
                 </ul>
 
                 <div class="nav-actions">
-                    <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-secondary btn-sm" aria-label="Download Resume">
-                        <i class="fa-solid fa-file-arrow-down"></i> Resume
-                    </a>
-                    <a href="#contact" class="btn btn-primary btn-sm">
-                        Hire Me <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                    <button class="menu-toggle" id="mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
-                        <i class="fa-solid fa-bars"></i>
+                    <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-secondary btn-sm" id="nav-resume">Resume</a>
+                    <a href="#contact" class="btn btn-primary btn-sm magnetic">Hire Me</a>
+                    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-links">
+                        <i class="fa-solid fa-bars" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
         </nav>
     </header>
 
-    <main>
-        <!-- Hero Section -->
+    <main id="main">
+        <!-- Hero -->
         <section id="home" class="hero-section">
-            <div class="container hero-grid">
-                <div class="hero-text-content">
-                    <div class="hero-badge-wrapper">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-text">
                         <div class="hero-badge">
-                            <span class="pulse-dot"></span>
-                            <span id="hero-badge-text">Open to full-time & internships | Bhopal • Indore</span>
+                            <span class="pulse-dot" aria-hidden="true"></span>
+                            <span id="hero-badge-text">Open to full-time &amp; internships | Bhopal • Indore</span>
+                        </div>
+
+                        <h1 class="hero-title">
+                            <span class="hero-line1" id="hero-line1" aria-label="Hi, I'm Ziyan Khan">Hi, I'm Ziyan Khan</span>
+                            <span class="hero-line2">
+                                <span class="hero-lead-in" id="hero-lead-in">I'm a</span>
+                                <span class="typing-text" id="typing-text">Python Django Developer</span><span class="typing-cursor" id="typing-cursor" aria-hidden="true"></span>
+                            </span>
+                        </h1>
+
+                        <p class="hero-subtext" id="hero-subtext">Final-year B.Tech CSE (AI/ML) student from Bhopal. I build Django + React web apps and WordPress websites that work for real businesses.</p>
+
+                        <div class="hero-cta">
+                            <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-primary magnetic"><i class="fa-solid fa-file-arrow-down" aria-hidden="true"></i> Download Resume</a>
+                            <a href="#projects" class="btn btn-secondary">View Projects</a>
+                            <a href="#contact" class="btn btn-secondary">Contact Me</a>
                         </div>
                     </div>
 
-                    <h1 class="hero-title">
-                        <span class="hero-title-line1">Hi, I'm Ziyan Khan</span>
-                        <span class="hero-title-line2">
-                            <span class="hero-lead-prefix">I'm a </span>
-                            <span class="typing-container gradient-text" id="typing-text">Python Django Developer</span><span class="typing-cursor" id="typing-cursor" aria-hidden="true"></span>
-                        </span>
-                    </h1>
+                    <div class="hero-photo-col">
+                        <div class="photo-scene" id="photo-scene">
+                            <div class="photo-glow" id="photo-glow" aria-hidden="true"></div>
+                            <div class="photo-ring" id="photo-ring">
+                                <div class="photo-inner">
+                                    <div class="photo-frame">
+                                        <img src="ziyan.webp" alt="Ziyan Khan, Python Django and WordPress developer" width="400" height="400" loading="eager" fetchpriority="high" decoding="async">
+                                    </div>
+                                </div>
+                            </div>
 
-                    <p class="hero-subtext" id="hero-subtext">
-                        Final-year B.Tech CSE (AI/ML) student from Bhopal. I build Django + React web apps and WordPress websites that work for real businesses.
-                    </p>
+                            <div class="float-card float-card-1" id="float-card-1">
+                                <div class="float-icon"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
+                                <div class="float-info">
+                                    <h3>Backend Lead Intern</h3>
+                                    <p>Infosys Springboard (BugFlow)</p>
+                                    <span class="float-badge">5-MEMBER TEAM</span>
+                                </div>
+                            </div>
 
-                    <div class="hero-cta-group">
-                        <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-primary">
-                            <i class="fa-solid fa-file-arrow-down"></i> Download Resume
-                        </a>
-                        <a href="#projects" class="btn btn-secondary">
-                            <i class="fa-solid fa-laptop-code"></i> View Projects
-                        </a>
-                        <a href="#contact" class="btn btn-secondary">
-                            <i class="fa-solid fa-paper-plane"></i> Contact Me
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Hero Photo & Interactive Visual Column (Right) -->
-                <div class="hero-photo-column" id="hero-photo-column">
-                    <div class="photo-card-scene" id="photo-card-scene">
-                        <!-- Parallax Glow Behind Ring -->
-                        <div class="photo-glow-bg" id="photo-glow"></div>
-
-                        <!-- Rotating Conic Gradient Ring -->
-                        <div class="conic-ring-wrapper" id="conic-ring">
-                            <div class="conic-ring-inner">
-                                <!-- Profile Photo with Depth & Cutout Overflow -->
-                                <div class="photo-frame" id="photo-frame">
-                                    <div class="cursor-glow" id="cursor-glow"></div>
-                                    <img 
-                                        src="ziyan.webp" 
-                                        alt="Ziyan Khan, Python Django and WordPress developer" 
-                                        class="hero-profile-photo"
-                                        width="400"
-                                        height="400"
-                                        loading="eager"
-                                        fetchpriority="high"
-                                    >
+                            <div class="float-card float-card-2" id="float-card-2">
+                                <div class="float-icon"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i></div>
+                                <div class="float-info">
+                                    <h3>LNCT&amp;S Bhopal</h3>
+                                    <p>B.Tech CSE (AI/ML) | CGPA 7.9</p>
+                                    <span class="float-badge">CLASS OF 2027</span>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Floating Glass Card 1 (Top Left Overlap) -->
-                        <div class="glass-card hero-float-card float-card-1" id="float-card-1">
-                            <div class="float-icon"><i class="fa-solid fa-server"></i></div>
-                            <div class="float-info">
-                                <h3>Backend Lead Intern</h3>
-                                <p>Infosys Springboard (BugFlow)</p>
-                                <span class="float-badge">5-MEMBER TEAM</span>
-                            </div>
-                        </div>
-
-                        <!-- Floating Glass Card 2 (Bottom Right Overlap) -->
-                        <div class="glass-card hero-float-card float-card-2" id="float-card-2">
-                            <div class="float-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                            <div class="float-info">
-                                <h3>LNCT&S Bhopal</h3>
-                                <p>B.Tech CSE (AI/ML) | CGPA 7.9</p>
-                                <span class="float-badge">CLASS OF 2027</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Hero Stat Chips -->
-            <div class="container">
-                <div class="hero-stats-grid" id="hero-stats-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="stats-row" id="stats-row"></div>
             </div>
         </section>
 
-        <!-- Tech Marquee Banner -->
-        <div class="marquee-container" aria-label="Technologies Marquee">
-            <div class="marquee-track" id="marquee-track">
-                <!-- Hydrated dynamically from content.js -->
-            </div>
+        <div class="marquee" aria-label="Technologies I use">
+            <div class="marquee-track" id="marquee-track"></div>
         </div>
 
-        <!-- About Section (Bento Grid) -->
         <section id="about" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-user"></i> About Me</span>
-                    <h2 class="section-title">Practical Developer with Real Business Focus</h2>
-                    <p class="section-subtitle">A balanced approach to software development, combining backend architecture with client-facing web and SEO solutions.</p>
-                </div>
-
-                <div class="about-bento">
-                    <!-- Left Bento Card: Summary & Highlights -->
-                    <div class="glass-card about-summary-card tilt-card reveal" data-tilt>
-                        <div class="about-text" id="about-summary-text">
-                            <!-- Hydrated dynamically from content.js -->
-                        </div>
-                        <div class="about-highlights" id="about-highlights-grid">
-                            <!-- Hydrated dynamically from content.js -->
-                        </div>
-                    </div>
-
-                    <!-- Right Bento Card: Formal Education -->
-                    <div class="glass-card education-card tilt-card reveal" data-tilt id="about-education-content">
-                        <!-- Hydrated dynamically from content.js -->
-                    </div>
+                <div class="section-header" data-header="about"></div>
+                <div class="about-grid">
+                    <div class="about-text reveal" id="about-text"></div>
+                    <div class="card edu-card reveal" id="about-edu" style="--i:1"></div>
                 </div>
             </div>
         </section>
 
-        <!-- Skills Section -->
         <section id="skills" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-layer-group"></i> Technical Arsenal</span>
-                    <h2 class="section-title">Skills & Technologies</h2>
-                    <p class="section-subtitle">Categorized tools and technologies I use to build scalable web apps, clean APIs, and SEO-optimized business websites.</p>
-                </div>
-
-                <div class="skills-grid" id="skills-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="section-header" data-header="skills"></div>
+                <div class="skills-grid" id="skills-grid"></div>
             </div>
         </section>
 
-        <!-- Experience Timeline -->
         <section id="experience" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-briefcase"></i> Track Record</span>
-                    <h2 class="section-title">Work Experience & Internships</h2>
-                    <p class="section-subtitle">Real-world responsibilities, from leading backend architecture in a 5-member agile team to maintaining commercial client web operations.</p>
-                </div>
-
-                <div class="timeline" id="experience-timeline">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="section-header" data-header="experience"></div>
+                <div class="timeline" id="timeline"></div>
             </div>
         </section>
 
-        <!-- Projects Section -->
         <section id="projects" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-laptop-code"></i> Portfolio Work</span>
-                    <h2 class="section-title">Featured Projects</h2>
-                    <p class="section-subtitle">Production client platforms, full-stack web applications, and mobile apps published on Google Play.</p>
-                </div>
-
-                <div class="projects-grid" id="projects-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="section-header" data-header="projects"></div>
+                <div class="projects-grid" id="projects-grid"></div>
             </div>
         </section>
 
-        <!-- Services Section (Bento Grid) -->
         <section id="services" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-handshake"></i> What I Deliver</span>
-                    <h2 class="section-title">Services & Offerings</h2>
-                    <p class="section-subtitle">Providing businesses and engineering teams with reliable digital presence, backend APIs, and search engine discoverability.</p>
-                </div>
-
-                <div class="services-grid" id="services-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="section-header" data-header="services"></div>
+                <div class="services-grid" id="services-grid"></div>
             </div>
         </section>
 
-        <!-- Achievements Section -->
         <section id="achievements" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-trophy"></i> Milestones</span>
-                    <h2 class="section-title">Notable Achievements</h2>
-                    <p class="section-subtitle">Hackathons, national competitions, and measurable performance optimizations.</p>
-                </div>
-
-                <div class="achievements-grid" id="achievements-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
+                <div class="section-header" data-header="achievements"></div>
+                <ul class="ach-list" id="ach-list"></ul>
             </div>
         </section>
 
-        <!-- Certifications Section -->
         <section id="certifications" class="section">
             <div class="container">
-                <div class="section-header reveal">
-                    <span class="section-tag"><i class="fa-solid fa-certificate"></i> Verified Credentials</span>
-                    <h2 class="section-title">Industry Certifications</h2>
-                    <p class="section-subtitle">Credentials and validations from NASSCOM, Wipro TalentNext, EY, Microsoft, and Infosys.</p>
-                </div>
-
-                <div class="certs-grid" id="certs-grid">
-                    <!-- Hydrated dynamically from content.js -->
-                </div>
-
-                <div class="certs-toggle-wrapper">
-                    <button class="btn btn-secondary" id="certs-toggle-btn" onclick="toggleAllCerts()">
-                        <i class="fa-solid fa-chevron-down"></i> Show All Certifications
-                    </button>
+                <div class="section-header" data-header="certifications"></div>
+                <div class="certs-grid" id="certs-grid"></div>
+                <div class="certs-toggle">
+                    <button class="btn btn-secondary" id="certs-toggle" type="button" aria-expanded="false" aria-controls="certs-grid">Show all certifications</button>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
         <section id="contact" class="section">
-            <div class="container" id="contact-container">
-                <!-- Hydrated dynamically from content.js -->
+            <div class="container">
+                <div class="card contact-card reveal" id="contact-card"></div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
-        <div class="container footer-content">
-            <p class="footer-copy" id="footer-copy">© 2026 Ziyan Khan. All rights reserved.</p>
-            <p class="footer-tagline" id="footer-tagline">Designed with modern Aurora Glass & built for high performance.</p>
+        <div class="container footer-inner">
+            <p class="footer-copy" id="footer-copy">© 2026 Ziyan Khan</p>
+            <nav class="footer-links" aria-label="Footer links">
+                <a href="https://www.linkedin.com/in/ziyankhan" target="_blank" rel="noopener noreferrer" id="f-linkedin">LinkedIn</a>
+                <a href="https://github.com/ziyankhan-coder" target="_blank" rel="noopener noreferrer" id="f-github">GitHub</a>
+                <a href="mailto:ziyankhan809@gmail.com" id="f-email">Email</a>
+            </nav>
         </div>
     </footer>
 
-    <!-- Certificate Lightbox Modal -->
-    <div class="modal-backdrop" id="cert-modal" role="dialog" aria-modal="true" aria-label="Certificate Preview">
-        <div class="modal-content">
-            <button class="modal-close-btn" id="modal-close" aria-label="Close certificate preview">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <img src="" alt="Certificate" id="modal-img" class="modal-image">
+    <div class="modal" id="cert-modal" role="dialog" aria-modal="true" aria-label="Certificate preview" aria-hidden="true">
+        <div class="modal-box">
+            <button class="modal-close" id="modal-close" type="button" aria-label="Close certificate preview"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+            <img src="" alt="" id="modal-img" class="modal-img">
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="content.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
