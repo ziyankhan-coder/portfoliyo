@@ -71,8 +71,9 @@ window.PORTFOLIO_DATA = {
     stats: [
       { value: "4+", label: "Projects Built" },
       { value: "1", label: "Live Client Website" },
-      { value: "1", label: "App on Google Play" },
-      { value: "200+", label: "LeetCode Solved" }
+      { value: "1", label: "App on Google Play" }
+      // LeetCode card removed until a verified count + profile URL are available.
+      // To add it back: { value: "<real count>", label: "LeetCode Solved", href: "<profile url>" }
     ]
   },
 

@@ -48,12 +48,15 @@ function renderHero(hero) {
   // Stat Chips
   const statsContainer = document.getElementById('hero-stats-grid');
   if (statsContainer && hero.stats) {
-    statsContainer.innerHTML = hero.stats.map(s => `
-      <div class="glass-card stat-chip tilt-card" data-tilt>
+    statsContainer.innerHTML = hero.stats.map(s => {
+      const inner = `
         <div class="stat-value">${s.value}</div>
-        <div class="stat-label">${s.label}</div>
-      </div>
-    `).join('');
+        <div class="stat-label">${s.label}</div>`;
+      // A stat with an href becomes a real link (e.g. a profile page)
+      return s.href
+        ? `<a href="${s.href}" target="_blank" rel="noopener noreferrer" class="glass-card stat-chip tilt-card" data-tilt>${inner}</a>`
+        : `<div class="glass-card stat-chip tilt-card" data-tilt>${inner}</div>`;
+    }).join('');
   }
 }
 
@@ -423,46 +426,55 @@ function initScrollProgressBar() {
 }
 
 // Typing Text Effect in Hero
+// type 70ms/char -> hold 1.6s -> delete 40ms/char -> next role (loops through all roles)
 function initTypingEffect(roles) {
   const el = document.getElementById('typing-text');
+  const cursor = document.getElementById('typing-cursor');
   if (!el || !roles || !roles.length) return;
 
-  // Reduced motion: leave static default text untouched
+  const TYPE_MS = 70;
+  const HOLD_MS = 1600;
+  const DELETE_MS = 40;
+  const GAP_MS = 300; // short beat before the next role starts
+
+  // Reduced motion: first role, static, no cursor
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     el.textContent = roles[0];
+    if (cursor) cursor.style.display = 'none';
     return;
   }
 
   let roleIndex = 0;
-  let charIndex = roles[0].length;
-  let isDeleting = true;
-  let delay = 2400; // Hold initial static role
+  let charIndex = 0;
+  let isDeleting = false;
+  el.textContent = '';
 
-  function type() {
+  function tick() {
     const current = roles[roleIndex];
-    if (isDeleting) {
-      el.textContent = current.substring(0, charIndex - 1);
-      charIndex--;
-      delay = 45;
-    } else {
-      el.textContent = current.substring(0, charIndex + 1);
+    let delay;
+
+    if (!isDeleting) {
       charIndex++;
-      delay = 95;
+      el.textContent = current.slice(0, charIndex);
+      delay = TYPE_MS;
+      if (charIndex === current.length) {
+        isDeleting = true;
+        delay = HOLD_MS;
+      }
+    } else {
+      charIndex--;
+      el.textContent = current.slice(0, charIndex);
+      delay = DELETE_MS;
+      if (charIndex === 0) {
+        isDeleting = false;
+        roleIndex = (roleIndex + 1) % roles.length;
+        delay = GAP_MS;
+      }
     }
-
-    if (!isDeleting && charIndex === current.length) {
-      delay = 2400; // Pause at end of completed word
-      isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      roleIndex = (roleIndex + 1) % roles.length;
-      delay = 380; // Pause before typing next word
-    }
-
-    setTimeout(type, delay);
+    setTimeout(tick, delay);
   }
 
-  setTimeout(type, delay);
+  setTimeout(tick, 400);
 }
 
 // Hero Photo 3D Tilt, Parallax Layers, and Cursor Glow

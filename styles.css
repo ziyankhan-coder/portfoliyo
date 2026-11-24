@@ -503,14 +503,23 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--grad-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  border-right: 3px solid var(--accent-violet-light);
-  animation: blinkCursor 0.8s infinite;
   white-space: nowrap;
 }
 
+.typing-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.95em;
+  margin-left: 4px;
+  align-self: center;
+  border-radius: 2px;
+  background: var(--accent-violet-light);
+  animation: blinkCursor 1s steps(1) infinite;
+}
+
 @keyframes blinkCursor {
-  0%, 100% { border-color: transparent; }
-  50% { border-color: var(--accent-violet-light); }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .hero-subtext {
@@ -538,6 +547,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   position: relative;
   width: 100%;
+  padding: 80px 0 90px; /* room for the cards that sit outside the ring */
 }
 
 .photo-card-scene {
@@ -575,14 +585,22 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   border-radius: 50%;
   padding: 4px;
-  background: conic-gradient(from 0deg, #3B82F6, #8B5CF6, #22D3EE, #3B82F6);
-  animation: spinRing 18s linear infinite;
   z-index: 1;
-  transition: animation-duration 0.4s ease, transform 0.2s ease-out;
+  transition: transform 0.2s ease-out;
   will-change: transform;
 }
 
-.photo-card-scene:hover .conic-ring-wrapper {
+/* Only the gradient ring spins; the photo inside stays upright */
+.conic-ring-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #3B82F6, #8B5CF6, #22D3EE, #3B82F6);
+  animation: spinRing 18s linear infinite;
+}
+
+.photo-card-scene:hover .conic-ring-wrapper::before {
   animation-duration: 6s; /* Spins faster on hover */
 }
 
@@ -598,6 +616,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   background: #070B1A;
   position: relative;
+  z-index: 1;
   overflow: hidden;
   box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.8);
 }
@@ -612,17 +631,22 @@ h1, h2, h3, h4, h5, h6 {
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
+  /* Soft blue -> violet fill (60% opacity) so the dark blazer separates from the ring */
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.6) 0%, rgba(76, 29, 149, 0.6) 100%);
 }
 
 .hero-profile-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center top;
+  object-position: center 15%;
   border-radius: 50%;
   display: block;
+  position: relative;
   z-index: 2;
-  transition: transform 0.4s ease;
+  /* ~15% larger, anchored at the top so the head keeps its headroom */
+  transform: scale(1.15);
+  transform-origin: 50% 0;
 }
 
 /* Cursor Glow highlight following pointer */
@@ -655,7 +679,7 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 16px;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
   z-index: 4;
-  white-space: nowrap;
+  width: 232px;
   pointer-events: auto;
   transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
   will-change: transform;
@@ -705,16 +729,19 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px;
 }
 
-/* Card Positioning Overlapping Photo */
+/* Card positioning: both sit OUTSIDE the ring and overlap only its edge (<= 20px),
+   so they never cover the face or hair. */
 .float-card-1 {
-  top: 15px;
-  left: -48px;
+  /* top-left: bottom edge 22px below the ring's top, right edge stops short of the head */
+  right: 66%;
+  bottom: calc(100% - 22px);
   animation: floatCard1 5.5s ease-in-out infinite alternate;
 }
 
 .float-card-2 {
-  bottom: 20px;
-  right: -48px;
+  /* bottom-right: top edge 18px above the ring's bottom, hangs 20px past the right edge */
+  right: -20px;
+  top: calc(100% - 18px);
   animation: floatCard2 6.5s ease-in-out infinite alternate;
   animation-delay: -3s;
 }
@@ -744,9 +771,20 @@ h1, h2, h3, h4, h5, h6 {
 /* Hero Stat Chips */
 .hero-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-top: 48px;
+  margin-top: 24px;
+}
+
+a.stat-chip {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+a.stat-chip:focus-visible {
+  outline: 2px solid var(--accent-blue-light);
+  outline-offset: 3px;
 }
 
 .stat-chip {
@@ -1152,7 +1190,7 @@ h1, h2, h3, h4, h5, h6 {
    -------------------------------------------------------------------- */
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
   gap: 28px;
 }
 
@@ -1653,17 +1691,11 @@ h1, h2, h3, h4, h5, h6 {
     width: 320px;
     height: 320px;
   }
-  .float-card-1 {
-    left: -20px;
-  }
-  .float-card-2 {
-    right: -20px;
-  }
   .about-bento {
     grid-template-columns: 1fr;
   }
   .hero-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1700,7 +1732,7 @@ h1, h2, h3, h4, h5, h6 {
 
   .hero-title-line2 {
     justify-content: center;
-    font-size: clamp(1.2rem, 4vw, 1.65rem);
+    font-size: clamp(1rem, 4.6vw, 1.65rem);
   }
 
   .hero-subtext {
@@ -1714,26 +1746,35 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   /* Photo about 220px wide, centered */
+  .hero-photo-column {
+    padding: 88px 0 92px;
+  }
+
   .photo-card-scene {
     width: 220px;
     height: 220px;
   }
 
-  /* Stack floating cards cleanly without horizontal overflow */
-  .float-card-1 {
-    top: -24px;
-    left: 50%;
-    transform: translateX(-50%);
-    animation: none;
+  /* Cards stay outside the ring, hugging its top-left / bottom-right edge,
+     and never run past the viewport */
+  .hero-float-card {
+    width: 212px;
     padding: 8px 12px;
+    gap: 10px;
+    text-align: left;
   }
-  
-  .float-card-2 {
-    bottom: -28px;
-    right: 50%;
-    transform: translateX(50%);
+
+  .float-card-1 {
+    right: auto;
+    left: -40px;
+    bottom: calc(100% - 8px);
     animation: none;
-    padding: 8px 12px;
+  }
+
+  .float-card-2 {
+    right: -40px;
+    top: calc(100% - 8px);
+    animation: none;
   }
 
   .float-icon {
@@ -1819,8 +1860,17 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%;
   }
   .hero-stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .stat-chip {
+    padding: 14px 6px;
+  }
+  .stat-value {
+    font-size: 1.5rem;
+  }
+  .stat-label {
+    font-size: 0.72rem;
   }
   .contact-card {
     padding: 36px 18px;
@@ -1848,7 +1898,7 @@ h1, h2, h3, h4, h5, h6 {
   .marquee-track {
     animation: none !important;
   }
-  .conic-ring-wrapper {
+  .conic-ring-wrapper::before {
     animation: none !important;
   }
   .float-card-1,
@@ -1856,8 +1906,7 @@ h1, h2, h3, h4, h5, h6 {
   .photo-card-scene {
     animation: none !important;
   }
-  .typing-container {
-    animation: none !important;
-    border-right: none !important;
+  .typing-cursor {
+    display: none !important;
   }
 }
