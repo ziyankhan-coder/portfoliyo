@@ -2,433 +2,303 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ziyan Khan - Portfolio</title>
-    <meta name="description" content="Portfolio of Ziyan Khan, AI & ML Engineering Student.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ziyan Khan | Python Django & WordPress Developer</title>
+    
+    <!-- SEO & Metadata -->
+    <meta name="description" content="Portfolio of Ziyan Khan — Python Django & WordPress/SEO Developer from Bhopal. Building full-stack web applications, REST APIs, and SEO-optimized business websites.">
+    <meta name="keywords" content="Ziyan Khan, Python Developer, Django Developer, WordPress Developer, SEO Bhopal, Web Developer Bhopal, Indore Developer, LNCT Bhopal, Full Stack Developer">
+    <meta name="author" content="Ziyan Khan">
+    <link rel="canonical" href="https://portfoliyo-olive.vercel.app/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.svg">
+    <meta name="theme-color" content="#070B1A">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://portfoliyo-olive.vercel.app/">
+    <meta property="og:title" content="Ziyan Khan | Python Django & WordPress Developer">
+    <meta property="og:description" content="Final-year B.Tech CSE (AI/ML) student from Bhopal building Django + React web apps and SEO-optimized WordPress websites for real businesses.">
+    <meta property="og:image" content="https://portfoliyo-olive.vercel.app/og.png">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://portfoliyo-olive.vercel.app/">
+    <meta name="twitter:title" content="Ziyan Khan | Python Django & WordPress Developer">
+    <meta name="twitter:description" content="Final-year B.Tech CSE (AI/ML) student from Bhopal building Django + React web apps and SEO-optimized WordPress websites for real businesses.">
+    <meta name="twitter:image" content="https://portfoliyo-olive.vercel.app/og.png">
+
+    <!-- Google Fonts Preconnect & Stylesheet -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Custom Modern Aurora Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <nav class="navbar">
-        <a href="#" class="logo">ZIYAN</a>
-        <div class="nav-links">
-            <a href="#home" class="active">Home</a>
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#experience">Internships</a>
-            <a href="#projects">Projects</a>
-            <a href="#certifications">Certs</a>
-        </div>
-        <a href="#contact" class="btn-primary small">Hire Me <i class="fa-solid fa-arrow-right"></i></a>
-    </nav>
+
+    <!-- Scroll Progress Indicator -->
+    <div id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- Background Aurora Ambient Glow & Dotted Grid -->
+    <div class="aurora-bg" aria-hidden="true">
+        <div class="aurora-orb orb-1"></div>
+        <div class="aurora-orb orb-2"></div>
+        <div class="aurora-orb orb-3"></div>
+    </div>
+    <div class="grid-overlay" aria-hidden="true"></div>
+
+    <!-- Navigation Header -->
+    <header>
+        <nav class="navbar" aria-label="Main Navigation">
+            <div class="container nav-container">
+                <a href="#home" class="nav-brand" aria-label="Ziyan Khan Home">
+                    <div class="brand-icon">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <span>Ziyan Khan</span>
+                </a>
+
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#home" class="nav-link active">Home</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="#skills" class="nav-link">Skills</a></li>
+                    <li><a href="#experience" class="nav-link">Experience</a></li>
+                    <li><a href="#projects" class="nav-link">Projects</a></li>
+                    <li><a href="#services" class="nav-link">Services</a></li>
+                    <li><a href="#certifications" class="nav-link">Certifications</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-secondary btn-sm" aria-label="Download Resume">
+                        <i class="fa-solid fa-file-arrow-down"></i> Resume
+                    </a>
+                    <a href="#contact" class="btn btn-primary btn-sm">
+                        Hire Me <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <button class="menu-toggle" id="mobile-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <main>
         <!-- Hero Section -->
         <section id="home" class="hero-section">
-            <div class="hero-content">
-                <div class="glass-card floating-card left-card">
-                    <div class="icon-wrapper"><i class="fa-solid fa-code"></i></div>
-                    <h3>AI & ML Enthusiast</h3>
-                    <p>Skilled in Python, Django, and Data Science.</p>
-                </div>
-                
-                <div class="center-focus">
-                    <h1>Hi, I'm Ziyan Khan<br><span style="color: var(--accent-color);">AI & ML Engineer</span></h1>
-                    <p class="subtitle">A passionate B.Tech final-year student specializing in Computer Science (AI & ML) and modern Full-Stack Web Development. I love building smart, scalable solutions for real-world problems.</p>
-                    <a href="#projects" class="btn-primary large">Explore Projects <i class="fa-solid fa-arrow-right"></i></a>
+            <div class="container hero-grid">
+                <div class="hero-text-content">
+                    <div class="hero-badge-wrapper">
+                        <div class="hero-badge">
+                            <span class="pulse-dot"></span>
+                            <span id="hero-badge-text">Open to full-time & internships | Bhopal • Indore</span>
+                        </div>
+                    </div>
+
+                    <h1 class="hero-title">
+                        Hi, I'm Ziyan Khan<br>
+                        <span class="gradient-text">I'm a </span>
+                        <span class="typing-container" id="typing-text">Python Django Developer</span>
+                    </h1>
+
+                    <p class="hero-subtext" id="hero-subtext">
+                        Final-year B.Tech CSE (AI/ML) student from Bhopal. I build Django + React web apps and WordPress websites that work for real businesses.
+                    </p>
+
+                    <div class="hero-cta-group">
+                        <a href="/Ziyan_Khan_Resume.pdf" download class="btn btn-primary">
+                            <i class="fa-solid fa-file-arrow-down"></i> Download Resume
+                        </a>
+                        <a href="#projects" class="btn btn-secondary">
+                            <i class="fa-solid fa-laptop-code"></i> View Projects
+                        </a>
+                        <a href="#contact" class="btn btn-secondary">
+                            <i class="fa-solid fa-paper-plane"></i> Contact Me
+                        </a>
+                    </div>
                 </div>
 
-                <div class="glass-card floating-card right-card">
-                    <div class="icon-wrapper"><i class="fa-solid fa-user-graduate"></i></div>
-                    <h3>LNCT & S, Bhopal</h3>
-                    <p>B.Tech in CSE (AI & ML). Expected 2027</p>
+                <!-- Floating Glass Cards (Desktop / Tablet) -->
+                <div class="hero-visual" id="hero-floating-cards">
+                    <!-- Hydrated dynamically from content.js -->
                 </div>
             </div>
-            <!-- Background element for depth -->
-            <div class="hero-bg-glow"></div>
-        </section>
 
-        <!-- About & Education Section -->
-        <section id="about" class="about-section">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-grid">
-                <div class="glass-card about-card">
-                    <h3>My Journey</h3>
-                    <p>I am a final-year Computer Science student specializing in Artificial Intelligence and Machine Learning at LNCT & S, Bhopal. With a solid foundation in Data Structures, Full-Stack Web Development (Django & React), and applied Machine Learning, I design and deploy production-ready applications. Actively seeking software engineering, full-time, and internship roles to build impactful software.</p>
-                </div>
-                <div class="glass-card education-card">
-                    <h3>Education</h3>
-                    <div class="edu-item">
-                        <h4>B.Tech – Computer Science & Engineering (AI & ML)</h4>
-                        <p class="edu-school">LNCT & S, Bhopal</p>
-                        <p class="edu-meta">Final Year (2023 – 2027) | CGPA: 7.9</p>
-                    </div>
-                    <div class="edu-item">
-                        <h4>Class 12 – Science (PCM)</h4>
-                        <p class="edu-school">Little Angel Convent Higher Secondary School</p>
-                        <p class="edu-meta">Year: 2023 | Percentage: 76% (MPBSE)</p>
-                    </div>
-                    <div class="edu-item">
-                        <h4>Class 10 – Science</h4>
-                        <p class="edu-school">Little Angel Convent Higher Secondary School</p>
-                        <p class="edu-meta">Year: 2021 | Percentage: 82% (MPBSE)</p>
-                    </div>
+            <!-- Hero Stat Chips -->
+            <div class="container">
+                <div class="hero-stats-grid" id="hero-stats-grid">
+                    <!-- Hydrated dynamically from content.js -->
                 </div>
             </div>
         </section>
 
-        <!-- Skills Section (Focused purely on skills & achievements) -->
-        <section id="skills" class="skills-section">
-            <h2 class="section-title">Technical Expertise</h2>
-            <div class="skills-grid">
-                <!-- Skills Card -->
-                <div class="glass-card skill-card">
-                    <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Programming</h3>
-                    <div class="skill-tags">
-                        <span class="tag">Python</span>
-                        <span class="tag">Java (Basic)</span>
-                    </div>
-                    
-                    <h3 style="margin-bottom: 0.5rem; margin-top: 1rem; font-size: 1.1rem;">Frontend</h3>
-                    <div class="skill-tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">React</span>
-                    </div>
+        <!-- Tech Marquee Banner -->
+        <div class="marquee-container" aria-label="Technologies Marquee">
+            <div class="marquee-track" id="marquee-track">
+                <!-- Hydrated dynamically from content.js -->
+            </div>
+        </div>
 
-                    <h3 style="margin-bottom: 0.5rem; margin-top: 1rem; font-size: 1.1rem;">Backend & Database</h3>
-                    <div class="skill-tags">
-                        <span class="tag">Django REST API</span>
-                        <span class="tag">MySQL</span>
-                        <span class="tag">SQL</span>
-                    </div>
-
-                    <h3 style="margin-bottom: 0.5rem; margin-top: 1rem; font-size: 1.1rem;">Data Science & AI</h3>
-                    <div class="skill-tags">
-                        <span class="tag">AI/ML Basics</span>
-                        <span class="tag">Pandas</span>
-                        <span class="tag">NumPy</span>
-                        <span class="tag">Matplotlib</span>
-                    </div>
-                    
-                    <h3 style="margin-bottom: 0.5rem; margin-top: 1rem; font-size: 1.1rem;">Tools & Core Concepts</h3>
-                    <div class="skill-tags">
-                        <span class="tag">Git</span>
-                        <span class="tag">GitHub</span>
-                        <span class="tag">DSA</span>
-                        <span class="tag">DBMS</span>
-                        <span class="tag">OOPs</span>
-                        <span class="tag">Computer Networks</span>
-                    </div>
+        <!-- About Section (Bento Grid) -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-user"></i> About Me</span>
+                    <h2 class="section-title">Practical Developer with Real Business Focus</h2>
+                    <p class="section-subtitle">A balanced approach to software development, combining backend architecture with client-facing web and SEO solutions.</p>
                 </div>
-                
-                <!-- Achievements Card -->
-                 <div class="glass-card achivement-card">
-                    <h3>Achievements & Hackathons</h3>
-                    <ul class="cert-list">
-                        <li>
-                            <div class="cert-info"><i class="fa-solid fa-trophy"></i> Participated in SIH (Smart India Hackathon)</div>
-                        </li>
-                        <li>
-                            <div class="cert-info"><i class="fa-solid fa-trophy"></i> Secured Rank under Top in Sunhack offline Hackathon</div>
-                        </li>
-                        <li>
-                            <div class="cert-info"><i class="fa-solid fa-trophy"></i> Built prototype tourism website in college hackathon</div>
-                        </li>
-                    </ul>
+
+                <div class="about-bento">
+                    <!-- Left Bento Card: Summary & Highlights -->
+                    <div class="glass-card about-summary-card tilt-card reveal" data-tilt>
+                        <div class="about-text" id="about-summary-text">
+                            <!-- Hydrated dynamically from content.js -->
+                        </div>
+                        <div class="about-highlights" id="about-highlights-grid">
+                            <!-- Hydrated dynamically from content.js -->
+                        </div>
+                    </div>
+
+                    <!-- Right Bento Card: Formal Education -->
+                    <div class="glass-card education-card tilt-card reveal" data-tilt id="about-education-content">
+                        <!-- Hydrated dynamically from content.js -->
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Internships / Experience Section (Highlighting Internships) -->
-        <section id="experience" class="experience-section">
-            <h2 class="section-title">Internships & Experience</h2>
-            <div class="experience-list">
-                
-                <!-- Internship 1 (Infosys Springboard) -->
-                <div class="glass-card internship-card">
-                    <div class="internship-image">
-                        <img src="assets/certs/infosys-internship.png" alt="Infosys Springboard Internship" >
-                    </div>
-                    <div class="internship-details">
-                        <div class="internship-header">
-                            <h3>Project Intern (Virtual)</h3>
-                            <p class="date"><i class="fa-regular fa-calendar"></i> Oct 2026 - Present</p>
-                        </div>
-                        <h4 class="company"><i class="fa-solid fa-building"></i> Infosys Springboard</h4>
-                        <p class="description">Selected for the prestigious 8-week Infosys Springboard Virtual Internship 7.0 (Batch 5). Working under industry mentors on enterprise application development, cloud workflows, and applied machine learning practices.</p>
-                        <a href="assets/certs/infosys-internship.png" target="_blank" class="btn-primary small"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Offer / Badge</a>
-                    </div>
+        <!-- Skills Section -->
+        <section id="skills" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-layer-group"></i> Technical Arsenal</span>
+                    <h2 class="section-title">Skills & Technologies</h2>
+                    <p class="section-subtitle">Categorized tools and technologies I use to build scalable web apps, clean APIs, and SEO-optimized business websites.</p>
                 </div>
 
-                <!-- Internship 2 (Cisco AICTE) -->
-                <div class="glass-card internship-card">
-                    <div class="internship-image">
-                        <img src="assets/certs/cisco.png" alt="Cisco AICTE Internship" >
-                    </div>
-                    <div class="internship-details">
-                        <div class="internship-header">
-                            <h3>Virtual Internship in Artificial Intelligence</h3>
-                            <p class="date"><i class="fa-regular fa-calendar"></i> Jun 2026 - Aug 2026</p>
-                        </div>
-                        <h4 class="company"><i class="fa-solid fa-building"></i> Cisco / AICTE / Ministry of Education</h4>
-                        <p class="description">Completed an intensive Virtual Internship Program in Artificial Intelligence supported by Cisco Networking Academy and AICTE (Govt. of India), focusing on machine learning algorithms and AI implementations.</p>
-                        <a href="assets/certs/cisco.png" target="_blank" class="btn-primary small"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Full Certificate</a>
-                    </div>
+                <div class="skills-grid" id="skills-grid">
+                    <!-- Hydrated dynamically from content.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Timeline -->
+        <section id="experience" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-briefcase"></i> Track Record</span>
+                    <h2 class="section-title">Work Experience & Internships</h2>
+                    <p class="section-subtitle">Real-world responsibilities, from leading backend architecture in a 5-member agile team to maintaining commercial client web operations.</p>
                 </div>
 
-                <!-- Internship 3 (ServiceNow) -->
-                <div class="glass-card internship-card">
-                    <div class="internship-image">
-                        <!-- Use an image (png/jpg) of the certificate here for best results -->
-                        <img src="assets/certs/servicenow.png" alt="ServiceNow Internship" >
-                    </div>
-                    <div class="internship-details">
-                        <div class="internship-header">
-                            <h3>Virtual Internship Program</h3>
-                            <p class="date"><i class="fa-regular fa-calendar"></i> Jul 2026</p>
-                        </div>
-                        <h4 class="company"><i class="fa-solid fa-building"></i> ServiceNow / AICTE / SmartBridge</h4>
-                        <p class="description">Completed an extensive Virtual Internship covering ServiceNow Administration, Agentic AI, Automated Test Framework (ATF) Essentials, Flows, and CSA Exam Preparation.</p>
-                        <a href="assets/certs/servicenow.png" target="_self" class="btn-primary small"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Full Certificate</a>
-                    </div>
+                <div class="timeline" id="experience-timeline">
+                    <!-- Hydrated dynamically from content.js -->
                 </div>
-
-                <!-- Internship 2 (TechnoHacks) -->
-                <div class="glass-card internship-card">
-                    <div class="internship-image">
-                        <!-- Use an image (png/jpg) of the certificate here for best results -->
-                        <img src="assets/certs/technohacks.jpg" alt="TechnoHacks Internship" >
-                    </div>
-                    <div class="internship-details">
-                        <div class="internship-header">
-                            <h3>Intern - Web Design & Development</h3>
-                            <p class="date"><i class="fa-regular fa-calendar"></i> Aug 2025 - Sep 2025</p>
-                        </div>
-                        <h4 class="company"><i class="fa-solid fa-building"></i> TechnoHacks Solutions Pvt. Ltd.</h4>
-                        <p class="description">Completed an intensive internship focusing on modern web design principles and development practices. Demonstrated consistency, hard work, and technical proficiency.</p>
-                        <a href="assets/certs/technohacks.jpg" target="_self" class="btn-primary small"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Full Certificate</a>
-                    </div>
-                </div>
-
-                <!-- Internship 3 (Edunet) -->
-                <div class="glass-card internship-card">
-                    <div class="internship-image">
-                        <!-- Use an image (png/jpg) of the certificate here for best results -->
-                        <img src="assets/certs/edunet.jpg" alt="Edunet Internship" >
-                    </div>
-                    <div class="internship-details">
-                        <div class="internship-header">
-                            <h3>Intern - Digital Literacy with AI</h3>
-                            <p class="date"><i class="fa-regular fa-calendar"></i> Nov 2025 - Dec 2025</p>
-                        </div>
-                        <h4 class="company"><i class="fa-solid fa-building"></i> Edunet Foundation / AICTE / IBM SkillsBuild</h4>
-                        <p class="description">Completed a comprehensive 6-week internship on Employability Skills & Digital Literacy with AI, organized in collaboration with AICTE.</p>
-                        <a href="assets/certs/edunet.jpg" target="_self" class="btn-primary small"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Full Certificate</a>
-                    </div>
-                </div>
-
             </div>
         </section>
 
         <!-- Projects Section -->
-        <section id="projects" class="projects-section">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
-                <!-- Project 1 -->
-                <div class="glass-card project-card">
-                    <div class="project-content">
-                        <h3 style="margin-bottom: 0.8rem;"><i class="fa-solid fa-film"></i> CineSense - AI Movie Recommender</h3>
-                        <p style="font-size: 0.95rem; margin-bottom: 1rem;">Built a modern, Netflix-style web application that suggests movies based on the user's mood. Features personalized AI-driven recommendations, a rating/review system with Google Auth, watchlist, and real-time trailers fetched dynamically.</p>
-                        <div class="skill-tags">
-                            <span class="tag">React.js</span>
-                            <span class="tag">Django REST</span>
-                            <span class="tag">Python</span>
-                            <span class="tag">Pandas</span>
-                            <span class="tag">YouTube/OMDB API</span>
-                        </div>
-                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <a href="https://cine-sence-movie-recommendation.vercel.app/" target="_blank" class="view-link" style="display:inline-flex;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Portal</a>
-                            <a href="https://github.com/ziyankhan-coder/CineSence-movieRecommendation" target="_blank" class="view-link" style="display:inline-flex; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2);"><i class="fa-brands fa-github"></i> GitHub</a>
-                        </div>
-                    </div>
+        <section id="projects" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-laptop-code"></i> Portfolio Work</span>
+                    <h2 class="section-title">Featured Projects</h2>
+                    <p class="section-subtitle">Production client platforms, full-stack web applications, and mobile apps published on Google Play.</p>
                 </div>
 
-                <!-- Project 2 -->
-                <div class="glass-card project-card">
-                    <div class="project-content">
-                        <h3 style="margin-bottom: 0.8rem;"><i class="fa-solid fa-robot"></i> AI Job Recommendation & Resume Analyzer</h3>
-                        <p style="font-size: 0.95rem; margin-bottom: 1rem;">A full-stack web application designed to help job seekers get personalized job recommendations. Analyzes PDF resumes against industry standards using AI/ML, generating real-time ATS match scores, skill radars, and keyword gap analysis.</p>
-                        <div class="skill-tags">
-                            <span class="tag">React.js</span>
-                            <span class="tag">Django REST</span>
-                            <span class="tag">NLP & ML</span>
-                            <span class="tag">Scikit-Learn</span>
-                            <span class="tag">PostgreSQL</span>
-                        </div>
-                        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <a href="https://job-recommandation-system-dsv6.onrender.com/" target="_blank" class="view-link" style="display:inline-flex;"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Portal</a>
-                            <a href="https://github.com/ziyankhan-coder/Job-Recommandation-System" target="_blank" class="view-link" style="display:inline-flex; background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2);"><i class="fa-brands fa-github"></i> GitHub</a>
-                        </div>
-                    </div>
+                <div class="projects-grid" id="projects-grid">
+                    <!-- Hydrated dynamically from content.js -->
                 </div>
             </div>
         </section>
 
-        <!-- Certifications Section (Highlighting Certs) -->
-        <section id="certifications" class="certifications-section">
-            <h2 class="section-title">Top Certifications</h2>
-            <div class="certs-grid">
-                <!-- Cert 1 (New Top 1) - NASSCOM 3 Pages -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/nasscom1.jpg" alt="NASSCOM AI ML">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>AI & ML Certification Program (Gold)</h3>
-                        <p>NASSCOM & Govt of India (FutureSkills Prime)</p>
-                        <p style="font-size: 0.82rem; color: #cbd5e1; margin-top: 0.2rem;">Includes detailed module scorecards (80% Gold Category)</p>
-                    </div>
-                    <div style="display: flex; gap: 0.4rem; width: 100%; margin-top: 0.5rem; flex-wrap: wrap;">
-                        <a href="assets/certs/nasscom1.jpg" target="_blank" class="view-link" style="flex: 1; min-width: 75px; text-align: center; justify-content: center; padding: 0.4rem 0.5rem; font-size: 0.82rem;"><i class="fa-solid fa-award"></i> Cert</a>
-                        <a href="assets/certs/nasscom2.jpg" target="_blank" class="view-link" style="flex: 1; min-width: 75px; text-align: center; justify-content: center; padding: 0.4rem 0.5rem; font-size: 0.82rem;"><i class="fa-solid fa-list-ol"></i> Score 1</a>
-                        <a href="assets/certs/nasscom3.jpg" target="_blank" class="view-link" style="flex: 1; min-width: 75px; text-align: center; justify-content: center; padding: 0.4rem 0.5rem; font-size: 0.82rem;"><i class="fa-solid fa-chart-pie"></i> Score 2</a>
-                    </div>
+        <!-- Services Section (Bento Grid) -->
+        <section id="services" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-handshake"></i> What I Deliver</span>
+                    <h2 class="section-title">Services & Offerings</h2>
+                    <p class="section-subtitle">Providing businesses and engineering teams with reliable digital presence, backend APIs, and search engine discoverability.</p>
                 </div>
 
-                <!-- Cert (EY & Microsoft AI Skills Passport) -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/ey-microsoft.png" alt="EY and Microsoft AI Skills Passport">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>AI Skills Passport</h3>
-                        <p>EY (Ernst & Young) & Microsoft</p>
-                    </div>
-                    <a href="assets/certs/ey-microsoft.png" target="_blank" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
+                <div class="services-grid" id="services-grid">
+                    <!-- Hydrated dynamically from content.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <section id="achievements" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-trophy"></i> Milestones</span>
+                    <h2 class="section-title">Notable Achievements</h2>
+                    <p class="section-subtitle">Hackathons, national competitions, and measurable performance optimizations.</p>
                 </div>
 
-                <!-- Cert (Wipro TalentNext Database Solutions Expert) -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/wipro-talentnext.png" alt="Wipro TalentNext Database Solutions Expert">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Database Solutions Expert</h3>
-                        <p>Wipro Limited (TalentNext)</p>
-                    </div>
-                    <a href="assets/certs/wipro-talentnext.png" target="_blank" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
+                <div class="achievements-grid" id="achievements-grid">
+                    <!-- Hydrated dynamically from content.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Certifications Section -->
+        <section id="certifications" class="section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-tag"><i class="fa-solid fa-certificate"></i> Verified Credentials</span>
+                    <h2 class="section-title">Industry Certifications</h2>
+                    <p class="section-subtitle">Credentials and validations from NASSCOM, Wipro TalentNext, EY, Microsoft, and Infosys.</p>
                 </div>
 
-                <!-- Cert 2 (New Top 2) -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/boardinfinity.jpg" alt="Board Infinity Data Science">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Data Science for Beginners</h3>
-                        <p>Board Infinity</p>
-                    </div>
-                    <a href="assets/certs/boardinfinity.jpg" target="_blank" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
+                <div class="certs-grid" id="certs-grid">
+                    <!-- Hydrated dynamically from content.js -->
                 </div>
 
-                <!-- Cert 3 (Previously Cert 1) -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/oracle.png" alt="Oracle Cert">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Oracle Cloud Infrastructure 2025</h3>
-                        <p>Certified AI Foundations Associate</p>
-                    </div>
-                    <a href="assets/certs/oracle.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
-                </div>
-                
-                <!-- Cert 2 -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/infosys-python.png" alt="Infosys Python">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Python Foundation Certification</h3>
-                        <p>Infosys Springboard</p>
-                    </div>
-                    <a href="assets/certs/infosys-python.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
-                </div>
-
-                <!-- Cert 3 -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/infosys-fundamentals.png" alt="Infosys Fundamentals">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Programming Fundamentals Python</h3>
-                        <p>Infosys</p>
-                    </div>
-                    <a href="assets/certs/infosys-fundamentals.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
-                </div>
-
-                <!-- Cert 4 -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/tata.png" alt="Tata Cert">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Tata Job Simulation</h3>
-                        <p>TCS</p>
-                    </div>
-                    <a href="assets/certs/tata.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
-                </div>
-
-                <!-- Cert 5 -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/django.png" alt="Django Cert">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>Django Web Development</h3>
-                        <p>SimplyLearn</p>
-                    </div>
-                    <a href="assets/certs/django.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
-                </div>
-
-                <!-- Cert 6 -->
-                <div class="glass-card cert-item">
-                    <div class="cert-thumbnail">
-                        <img src="assets/certs/udemy.png" alt="Udemy Cert">
-                    </div>
-                    <div class="cert-item-details">
-                        <h3>HTML & CSS Basics</h3>
-                        <p>Udemy</p>
-                    </div>
-                    <a href="assets/certs/udemy.png" target="_self" class="view-link"><i class="fa-solid fa-eye"></i> View</a>
+                <div class="certs-toggle-wrapper">
+                    <button class="btn btn-secondary" id="certs-toggle-btn" onclick="toggleAllCerts()">
+                        <i class="fa-solid fa-chevron-down"></i> Show All Certifications
+                    </button>
                 </div>
             </div>
         </section>
 
         <!-- Contact Section -->
-        <section id="contact" class="contact-section">
-            <div class="glass-card contact-card">
-                <h2>Let's Connect</h2>
-                <p>I'm looking for internship opportunities. Feel free to reach out to me for collaborations or roles!</p>
-                <div class="contact-links">
-                    <a href="mailto:ziyankhan809@gmail.com" class="btn-primary"><i class="fa-solid fa-envelope"></i> Email Me</a>
-                    <a href="tel:+917869428441" class="btn-secondary"><i class="fa-solid fa-phone"></i> +91-7869428441</a>
-                    <a href="https://www.linkedin.com/in/ziyankhan" target="_blank" class="btn-secondary"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
-                    <a href="https://github.com/ziyankhan-coder" target="_blank" class="btn-secondary"><i class="fa-brands fa-github"></i> GitHub</a>
-                </div>
+        <section id="contact" class="section">
+            <div class="container" id="contact-container">
+                <!-- Hydrated dynamically from content.js -->
             </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2024 Ziyan Khan. Built with Passion.</p>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <p class="footer-copy" id="footer-copy">© 2026 Ziyan Khan. All rights reserved.</p>
+            <p class="footer-tagline" id="footer-tagline">Designed with modern Aurora Glass & built for high performance.</p>
+        </div>
     </footer>
 
+    <!-- Certificate Lightbox Modal -->
+    <div class="modal-backdrop" id="cert-modal" role="dialog" aria-modal="true" aria-label="Certificate Preview">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="modal-close" aria-label="Close certificate preview">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img src="" alt="Certificate" id="modal-img" class="modal-image">
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="content.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
