@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Initialize Micro-interactions
   initScrollProgressBar();
   initTypingEffect(data.hero.typingRoles);
+  initHeroParallaxAndTilt();
   initNavbar();
   initScrollReveal();
   init3DTilt();
@@ -43,21 +44,6 @@ function renderHero(hero) {
 
   const subtextEl = document.getElementById('hero-subtext');
   if (subtextEl) subtextEl.textContent = hero.subtext;
-
-  // Floating Glass Cards
-  const floatContainer = document.getElementById('hero-floating-cards');
-  if (floatContainer && hero.floatingCards) {
-    floatContainer.innerHTML = hero.floatingCards.map(c => `
-      <div class="glass-card hero-float-card tilt-card" data-tilt>
-        <div class="float-icon"><i class="${c.icon}"></i></div>
-        <div class="float-info">
-          <h3>${c.title}</h3>
-          <p>${c.subtitle}</p>
-          <span class="float-badge">${c.badge}</span>
-        </div>
-      </div>
-    `).join('');
-  }
 
   // Stat Chips
   const statsContainer = document.getElementById('hero-stats-grid');
@@ -441,36 +427,135 @@ function initTypingEffect(roles) {
   const el = document.getElementById('typing-text');
   if (!el || !roles || !roles.length) return;
 
+  // Reduced motion: leave static default text untouched
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = roles[0];
+    return;
+  }
+
   let roleIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-  let delay = 100;
+  let charIndex = roles[0].length;
+  let isDeleting = true;
+  let delay = 2400; // Hold initial static role
 
   function type() {
     const current = roles[roleIndex];
     if (isDeleting) {
       el.textContent = current.substring(0, charIndex - 1);
       charIndex--;
-      delay = 50;
+      delay = 45;
     } else {
       el.textContent = current.substring(0, charIndex + 1);
       charIndex++;
-      delay = 110;
+      delay = 95;
     }
 
     if (!isDeleting && charIndex === current.length) {
-      delay = 2000; // Pause at end of word
+      delay = 2400; // Pause at end of completed word
       isDeleting = true;
     } else if (isDeleting && charIndex === 0) {
       isDeleting = false;
       roleIndex = (roleIndex + 1) % roles.length;
-      delay = 400; // Pause before next word
+      delay = 380; // Pause before typing next word
     }
 
     setTimeout(type, delay);
   }
 
-  type();
+  setTimeout(type, delay);
+}
+
+// Hero Photo 3D Tilt, Parallax Layers, and Cursor Glow
+function initHeroParallaxAndTilt() {
+  const scene = document.getElementById('photo-card-scene');
+  if (!scene) return;
+
+  // Desktop pointer devices only
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const ring = document.getElementById('conic-ring');
+  const glow = document.getElementById('photo-glow');
+  const photoFrame = document.getElementById('photo-frame');
+  const card1 = document.getElementById('float-card-1');
+  const card2 = document.getElementById('float-card-2');
+
+  let rafId = null;
+  let targetRotateX = 0, targetRotateY = 0;
+  let currentRotateX = 0, currentRotateY = 0;
+  let isHovering = false;
+
+  function update() {
+    // Smooth interpolation (lerp)
+    currentRotateX += (targetRotateX - currentRotateX) * 0.12;
+    currentRotateY += (targetRotateY - currentRotateY) * 0.12;
+
+    // 1. 3D tilt on the main scene container (up to ~10 deg)
+    scene.style.transform = `perspective(1000px) rotateX(${currentRotateX.toFixed(2)}deg) rotateY(${currentRotateY.toFixed(2)}deg)`;
+
+    // 2. Parallax depth: cards the most (factor ~1.4), ring medium (factor ~0.7), glow least (factor ~0.3)
+    const px = currentRotateY / 10; // normalized -1 to 1
+    const py = -currentRotateX / 10;
+
+    if (card1) {
+      card1.style.transform = `translate3d(${(px * 16).toFixed(1)}px, ${(py * 16).toFixed(1)}px, 45px)`;
+    }
+    if (card2) {
+      card2.style.transform = `translate3d(${(px * -16).toFixed(1)}px, ${(py * -16).toFixed(1)}px, 45px)`;
+    }
+    if (ring) {
+      ring.style.transform = `translate3d(${(px * 8).toFixed(1)}px, ${(py * 8).toFixed(1)}px, 20px)`;
+    }
+    if (glow) {
+      glow.style.transform = `translate3d(${(px * 4).toFixed(1)}px, ${(py * 4).toFixed(1)}px, 0px)`;
+    }
+
+    if (isHovering || Math.abs(targetRotateX - currentRotateX) > 0.05 || Math.abs(targetRotateY - currentRotateY) > 0.05) {
+      rafId = requestAnimationFrame(update);
+    } else {
+      rafId = null;
+      if (!isHovering) {
+        scene.style.transform = '';
+        if (card1) card1.style.transform = '';
+        if (card2) card2.style.transform = '';
+        if (ring) ring.style.transform = '';
+        if (glow) glow.style.transform = '';
+      }
+    }
+  }
+
+  scene.addEventListener('mousemove', (e) => {
+    isHovering = true;
+    const rect = scene.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    // Normalize -1 to 1
+    const nx = (x / rect.width) * 2 - 1;
+    const ny = (y / rect.height) * 2 - 1;
+
+    targetRotateX = -ny * 10;
+    targetRotateY = nx * 10;
+
+    // Cursor glow follow
+    if (photoFrame) {
+      photoFrame.style.setProperty('--mouse-x', `${((x / rect.width) * 100).toFixed(1)}%`);
+      photoFrame.style.setProperty('--mouse-y', `${((y / rect.height) * 100).toFixed(1)}%`);
+    }
+
+    if (!rafId) {
+      rafId = requestAnimationFrame(update);
+    }
+  });
+
+  scene.addEventListener('mouseleave', () => {
+    isHovering = false;
+    targetRotateX = 0;
+    targetRotateY = 0;
+    if (!rafId) {
+      rafId = requestAnimationFrame(update);
+    }
+  });
 }
 
 // Navbar Scroll Effect, Mobile Menu & Active Nav Highlight
