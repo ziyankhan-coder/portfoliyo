@@ -192,11 +192,18 @@
       const btn = e.target.closest('.shot-dot');
       if (!btn) return;
       const p = data.projects.items.find((x) => x.id === btn.dataset.project);
+      if (!p) return;
       const n = Number(btn.dataset.index);
       const img = $('#proj-img-' + p.id);
-      img.src = p.images[n];
-      img.alt = `${p.title} screenshot ${n + 1} of ${p.images.length}`;
-      $$('.shot-dot', btn.parentElement).forEach((d) => d.setAttribute('aria-pressed', String(d === btn)));
+      if (img && p.images && p.images[n]) {
+        img.style.opacity = '0.35';
+        setTimeout(() => {
+          img.src = p.images[n];
+          img.alt = `${p.title} screenshot ${n + 1} of ${p.images.length}`;
+          img.style.opacity = '1';
+        }, 130);
+        $$('.shot-dot', btn.parentElement).forEach((d) => d.setAttribute('aria-pressed', String(d === btn)));
+      }
     });
   }
 
@@ -365,41 +372,60 @@
     });
   }
 
-  // Hero heading words, then typing line
+  // Rotating typing effect for Hero roles
   function initHeroSequence() {
-    const roles = data.hero.typingRoles;
+    const roles = (data.hero && data.hero.typingRoles) || [
+      "Python Django Developer",
+      "WordPress & SEO Developer",
+      "React Frontend Developer"
+    ];
     const text = $('#typing-text');
-    if (!motionOK) { text.textContent = roles[0]; return; }
+    if (!text || !roles.length) return;
 
-    const words = $$('#hero-line1 .w').length;
+    // Word reveal on line 1
     requestAnimationFrame(() => root.classList.add('ready'));
-    const startTyping = () => {
-      root.classList.add('typing-on');
-      runTyping(text, roles);
-    };
-    setTimeout(startTyping, words * 110 + 750);
-  }
 
-  function runTyping(el, roles) {
-    const TYPE = 70, HOLD = 1600, DELETE = 40, GAP = 300;
-    let r = 0, c = 0, deleting = false;
-    el.textContent = '';
-    (function tick() {
-      const cur = roles[r];
-      let delay;
-      if (!deleting) {
-        c++;
-        el.textContent = cur.slice(0, c);
-        delay = TYPE;
-        if (c === cur.length) { deleting = true; delay = HOLD; }
+    // Start with the initial role displayed
+    text.textContent = roles[0];
+
+    const TYPE = 65;      // ms per char typing
+    const DELETE = 35;    // ms per char deleting
+    const HOLD = 1800;    // ms pause when full word is typed
+    const GAP = 280;      // ms pause when word is deleted
+
+    let roleIdx = 0;
+    let charIdx = roles[0].length;
+    let isDeleting = true;
+
+    function step() {
+      const current = roles[roleIdx];
+
+      if (isDeleting) {
+        charIdx--;
+        text.textContent = current.slice(0, charIdx);
+
+        if (charIdx === 0) {
+          isDeleting = false;
+          roleIdx = (roleIdx + 1) % roles.length;
+          setTimeout(step, GAP);
+          return;
+        }
+        setTimeout(step, DELETE);
       } else {
-        c--;
-        el.textContent = cur.slice(0, c);
-        delay = DELETE;
-        if (c === 0) { deleting = false; r = (r + 1) % roles.length; delay = GAP; }
+        charIdx++;
+        text.textContent = current.slice(0, charIdx);
+
+        if (charIdx === current.length) {
+          isDeleting = true;
+          setTimeout(step, HOLD);
+          return;
+        }
+        setTimeout(step, TYPE);
       }
-      setTimeout(tick, delay);
-    })();
+    }
+
+    // Wait 2.2s with "Python Django Developer" fully visible, then start cycling!
+    setTimeout(step, 2200);
   }
 
   // Stats counters
@@ -532,13 +558,15 @@
   function initLightbox() {
     const modal = $('#cert-modal');
     const img = $('#modal-img');
+    const caption = $('#modal-caption');
     const close = $('#modal-close');
     let opener = null;
 
     const open = (btn) => {
       opener = btn;
       img.src = btn.dataset.src;
-      img.alt = btn.dataset.title + ' certificate';
+      img.alt = (btn.dataset.title || '') + ' certificate';
+      if (caption) caption.textContent = btn.dataset.title || '';
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';

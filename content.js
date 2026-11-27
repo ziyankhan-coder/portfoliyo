@@ -226,7 +226,11 @@ window.PORTFOLIO_DATA = {
         tech: ["React", "Django REST", "Pandas", "Gemini API", "OMDb", "YouTube API"],
         github: "https://github.com/ziyankhan-coder/CineSence-movieRecommendation",
         live: "https://cine-sence-movie-recommendation.vercel.app/",
-        images: ["assets/projects/cinesense.webp"]
+        images: [
+          "assets/projects/cinesense.webp",
+          "assets/projects/cinesense-2.webp",
+          "assets/projects/cinesense-3.webp"
+        ]
       },
       {
         // Hidden until its live link works again. Set showJobRec: true to show it.
@@ -365,6 +369,26 @@ window.PORTFOLIO_DATA = {
         title: "Django Web Development",
         issuer: "Simplilearn",
         image: "assets/certs/django.webp"
+      },
+      {
+        title: "Cybersecurity Analyst Job Simulation",
+        issuer: "Tata Group & Forage",
+        image: "assets/certs/tata.webp"
+      },
+      {
+        title: "Web Development Internship",
+        issuer: "TechnoHacks EduTech",
+        image: "assets/certs/technohacks.webp"
+      },
+      {
+        title: "Infosys Springboard Internship",
+        issuer: "Infosys Springboard",
+        image: "assets/certs/infosys-internship.webp"
+      },
+      {
+        title: "Full Stack Web Development",
+        issuer: "Udemy",
+        image: "assets/certs/udemy.webp"
       }
     ]
   },
