@@ -200,14 +200,21 @@ window.PORTFOLIO_DATA = {
         tech: ["Django REST Framework", "PostgreSQL", "React", "JWT"],
         github: "https://github.com/ziyankhan-coder/_Intelligent-Software-Defect-Tracking-System-Group-2",
         live: null,
-        images: ["assets/projects/bugflow.webp"]
+        images: [
+          "assets/projects/bugflow.webp",
+          "assets/projects/bugflow-2.webp"
+        ]
       },
       {
         id: "fairtours",
         title: "Fair Tours & Travels",
         status: "Client project",
+        isClient: true,
+        highlight: true,
+        badgeText: "✦ Live Client Project",
+        clientMeta: "IATA Accredited Agency • Bhopal",
         description:
-          "Website and ongoing SEO for a Bhopal travel agency. Scores 78/100 for SEO and accessibility on PageSpeed Insights.",
+          "Built and maintain the complete website and ongoing SEO for a Bhopal travel agency. Scores 78/100 for SEO and accessibility on PageSpeed Insights with live lead capture.",
         tech: ["WordPress", "Elementor", "GA4", "SEO"],
         github: null,
         live: "https://fairtoursandtravels.com",

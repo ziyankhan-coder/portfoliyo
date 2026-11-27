@@ -167,44 +167,177 @@
     $('#projects-grid').innerHTML = visible.map((p, i) => {
       const multi = p.images && p.images.length > 1;
       const shotAlt = (n) => `${p.title} screenshot${multi ? ` ${n} of ${p.images.length}` : ''}`;
+      const isClient = p.isClient || p.highlight || (p.status && p.status.toLowerCase().includes('client'));
+
+      const statusHtml = isClient
+        ? `<span class="tag project-status client-status-badge">
+             <span class="client-pulse-dot" aria-hidden="true"></span>
+             <span>${p.badgeText || '✦ Live Client Project'}</span>
+           </span>`
+        : `<span class="tag project-status">${p.status}</span>`;
+
       return `
-        <article class="card lift project${i === 0 ? ' featured' : ''} reveal" ${stagger(i)}>
-          <div class="project-shot">
-            <img src="${p.images[0]}" alt="${shotAlt(1)}" id="proj-img-${p.id}" width="1280" height="720" loading="lazy" decoding="async">
-            <span class="tag project-status">${p.status}</span>
-            ${multi ? `<div class="shot-dots" role="group" aria-label="${p.title} screenshots">
-              ${p.images.map((src, n) => `<button type="button" class="shot-dot" data-project="${p.id}" data-index="${n}" aria-pressed="${n === 0}" aria-label="Show screenshot ${n + 1}"></button>`).join('')}
-            </div>` : ''}
+        <article class="card lift project${i === 0 ? ' featured' : ''}${isClient ? ' client-highlight' : ''} reveal" ${stagger(i)} data-project-id="${p.id}">
+          <div class="project-shot" data-project="${p.id}" data-count="${p.images.length}">
+            <div class="shot-track" id="shot-track-${p.id}">
+              ${p.images.map((src, n) => `
+                <div class="shot-slide" aria-hidden="${n !== 0}">
+                  <img src="${src}" alt="${shotAlt(n + 1)}" width="1280" height="720" loading="${i === 0 && n === 0 ? 'eager' : 'lazy'}" decoding="async">
+                </div>
+              `).join('')}
+            </div>
+
+            ${statusHtml}
+
+            ${multi ? `
+              <button type="button" class="shot-arrow shot-arrow-prev" data-project="${p.id}" data-dir="-1" aria-label="Previous screenshot for ${p.title}">
+                <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="shot-arrow shot-arrow-next" data-project="${p.id}" data-dir="1" aria-label="Next screenshot for ${p.title}">
+                <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+              </button>
+              <div class="shot-dots" role="group" aria-label="${p.title} screenshots">
+                ${p.images.map((src, n) => `
+                  <button type="button" class="shot-dot" data-project="${p.id}" data-index="${n}" aria-pressed="${n === 0}" aria-label="Show screenshot ${n + 1} of ${p.images.length}">
+                    <span class="shot-dot-fill"></span>
+                  </button>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
+
           <div class="project-body">
+            ${isClient ? `
+              <div class="client-kicker">
+                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                <span>${p.clientMeta || 'Commercial Client Work • Production'}</span>
+              </div>
+            ` : ''}
             <h3 class="project-title">${p.title}</h3>
             <p class="project-desc">${p.description}</p>
             <div class="chips">${p.tech.map((t) => `<span class="chip">${t}</span>`).join('')}</div>
             <div class="project-actions">
-              ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> Live<span class="sr-only"> site of ${p.title}</span></a>` : ''}
+              ${p.live ? `<a href="${p.live}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm${isClient ? ' client-live-btn' : ''}"><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i> ${isClient ? 'Visit Live Website' : 'Live Demo'}<span class="sr-only"> of ${p.title}</span></a>` : ''}
               ${p.github ? `<a href="${p.github}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub<span class="sr-only"> repository of ${p.title}</span></a>` : ''}
             </div>
           </div>
         </article>`;
     }).join('');
 
-    $('#projects-grid').addEventListener('click', (e) => {
-      const btn = e.target.closest('.shot-dot');
-      if (!btn) return;
-      const p = data.projects.items.find((x) => x.id === btn.dataset.project);
-      if (!p) return;
-      const n = Number(btn.dataset.index);
-      const img = $('#proj-img-' + p.id);
-      if (img && p.images && p.images[n]) {
-        img.style.opacity = '0.35';
-        setTimeout(() => {
-          img.src = p.images[n];
-          img.alt = `${p.title} screenshot ${n + 1} of ${p.images.length}`;
-          img.style.opacity = '1';
-        }, 130);
-        $$('.shot-dot', btn.parentElement).forEach((d) => d.setAttribute('aria-pressed', String(d === btn)));
+    initProjectSliders(visible);
+  }
+
+  // Auto-sliding image carousel with pause-on-hover & touch swipe
+  function initProjectSliders(projects) {
+    const sliders = {};
+
+    projects.forEach((p, idx) => {
+      if (!p.images || p.images.length <= 1) return;
+      const track = $('#shot-track-' + p.id);
+      if (!track) return;
+
+      const card = track.closest('.project');
+      const shot = track.closest('.project-shot');
+      const total = p.images.length;
+      let current = 0;
+      let timer = null;
+      let isPaused = false;
+
+      // Stagger auto-slide intervals per project so they don't flip simultaneously
+      const interval = 3500 + (idx * 550);
+
+      function goTo(n, manual = false) {
+        current = (n + total) % total;
+        track.style.transform = `translateX(-${current * 100}%)`;
+
+        if (shot) {
+          $$('.shot-dot', shot).forEach((d, i) => {
+            d.setAttribute('aria-pressed', String(i === current));
+          });
+          $$('.shot-slide', track).forEach((s, i) => {
+            s.setAttribute('aria-hidden', String(i !== current));
+          });
+        }
+
+        if (manual) restartTimer();
       }
+
+      function next() {
+        if (!isPaused) goTo(current + 1);
+      }
+
+      function startTimer() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(next, interval);
+      }
+
+      function restartTimer() {
+        startTimer();
+      }
+
+      startTimer();
+
+      // Pause on mouse hover, resume on mouse leave
+      if (card) {
+        card.addEventListener('mouseenter', () => { isPaused = true; });
+        card.addEventListener('mouseleave', () => { isPaused = false; });
+      }
+
+      // Touch swipe support for mobile
+      if (shot) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        shot.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            isPaused = true;
+          }
+        }, { passive: true });
+
+        shot.addEventListener('touchend', (e) => {
+          isPaused = false;
+          if (e.changedTouches.length === 1) {
+            const diffX = e.changedTouches[0].clientX - touchStartX;
+            const diffY = e.changedTouches[0].clientY - touchStartY;
+            if (Math.abs(diffX) > 36 && Math.abs(diffX) > Math.abs(diffY)) {
+              if (diffX < 0) {
+                goTo(current + 1, true); // swipe left = next
+              } else {
+                goTo(current - 1, true); // swipe right = prev
+              }
+            }
+          }
+        }, { passive: true });
+      }
+
+      sliders[p.id] = { goTo, next, prev: () => goTo(current - 1, true) };
     });
+
+    // Delegate clicks for dots and arrow buttons
+    const grid = $('#projects-grid');
+    if (grid) {
+      grid.addEventListener('click', (e) => {
+        const dot = e.target.closest('.shot-dot');
+        if (dot) {
+          const pid = dot.dataset.project;
+          const idx = Number(dot.dataset.index);
+          if (sliders[pid]) sliders[pid].goTo(idx, true);
+          return;
+        }
+
+        const arrow = e.target.closest('.shot-arrow');
+        if (arrow) {
+          const pid = arrow.dataset.project;
+          const dir = Number(arrow.dataset.dir);
+          if (sliders[pid]) {
+            if (dir > 0) sliders[pid].next();
+            else sliders[pid].prev();
+          }
+        }
+      });
+    }
   }
 
   function renderServices() {
